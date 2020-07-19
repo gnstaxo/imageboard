@@ -1,0 +1,557 @@
+a {
+	text-decoration: none;
+	color: #005566;
+}
+
+a:hover {
+	color: black;
+	text-decoration: underline;
+}
+
+footer {
+  margin: 20px 0;
+}
+
+.Menu {
+	text-align: center;
+}
+
+.Title {
+	text-align: center;
+}
+
+.Formulario table{
+	margin: 10px auto;
+}
+
+#reply-window th {
+	background-color: #697983;
+  border-radius: 3px;
+  color: white;
+  padding: 3px;
+}
+
+.Formulario th {
+	background-color: #697983;
+  border-radius: 3px;
+  color: white;
+  padding: 3px;
+}
+
+textarea {
+  width: 100%;
+}
+.Thread {
+	border-top: 1px solid;
+	margin-bottom: 10px;
+	padding-top: 5px;
+	overflow: hidden;
+}
+
+.Thread-text {
+	margin-top: 5px;
+}
+
+.Thread-info {
+  margin: 3px 0;
+}
+
+.Thread-image {
+	float: left;
+	margin-right: 10px;
+	margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.full-image {
+  float: none;
+}
+
+.Thread-video {
+	float: left;
+	margin-right: 10px;
+  cursor: pointer;
+  max-width: 250px;
+  max-height: 300px;
+}
+
+.Hilo-title {
+	font-weight: bold;
+	color: #002a32;
+}
+
+.Thread-meta {
+  margin: 5px 0;
+}
+
+.Reply {
+	margin: 5px 0;
+}
+
+.Reply-meta {
+	margin-top: 5px;
+}
+
+.Respuesta-flecha {
+	float: left;
+  color: #697983;
+}
+
+.Reply-image {
+	float: left;
+	margin-right: 5px;
+	cursor: pointer;
+}
+
+.Respuesta-cuerpo {
+	display: table;
+	padding: 10px 5px;
+	background-color: #d7dddd;
+	border: 1px solid #697983;
+}
+
+.Author {
+	padding: 3px;
+	border-radius: 3px;
+	color: white;
+	text-shadow: 1px 1px 1px black;
+  font-size: .75em;
+}
+
+.role {
+  background-color: #25649f;
+	padding: 3px;
+	border-radius: 3px;
+	margin: 0 3px;
+	color: white;
+	text-shadow: 1px 1px 1px black;
+  font-size: .75em;
+}
+
+.Pagination {
+	text-align: center;
+  display: inline-block;
+	border: 1px solid #697983;
+  padding: 10px;
+}
+
+.Pagination-number {
+	margin: 0 3px;
+}
+
+.Catalog {
+  border-left: 1px solid #697983;
+  padding-left: 5px;
+}
+
+.Delete-form {
+  float: right;
+}
+
+.Card {
+	width: 250px;
+	border: 1px solid #697983;
+	text-align: center;
+	margin: 10px;
+}
+
+.Card-body {
+  height: 25rem;
+  overflow: hidden;
+}
+
+.Card-title{
+	margin: 0;
+}
+
+.Card-text {
+  text-align: left;
+  margin-left: 5px;
+}
+
+.Card a {
+	text-decoration: none;
+}
+
+.Card-footer {
+	border-top: 1px solid #697983;
+	text-align: right;
+	padding-right: 5px;
+}
+
+.hide-thread {
+	padding: 0 2px;
+	cursor: pointer;
+  font-weight: bold;
+}
+
+.hide-reply {
+	padding: 0 2px;
+	cursor: pointer;
+  font-weight: bold;
+}
+
+.Card-item {
+	display: inline-block;
+}
+
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.green-text {
+	color: green;
+}
+
+.pink-text {
+	color: #DA5364;
+}
+
+.footer-message {
+  margin-top: 10px;
+  text-align: center;
+  font-size: .8em;
+}
+
+.footer-contact {
+ margin-top: 20px;
+ text-align: center; 
+ font-size: .85em;
+}
+
+.Reports {
+  width: 80%;
+  margin: auto;
+  border-collapse: collapse;
+}
+
+.Reports thead {
+  font-weight: bold;
+  color: white;
+  background-color: #697983;
+}
+
+.Boards thead{
+  font-weight: bold;
+  color: white;
+  background-color: #697983;
+}
+
+.Reports tr:nth-child(even){
+  background: #CCC;
+}
+
+.Reports td,th {
+  border: 1px solid black;
+  padding-left: 5px;
+}
+
+.btn {
+  background-color: #697983;
+  color: white;
+  padding: 3px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: .8em;
+}
+
+.btn:hover {
+  text-decoration: none;
+  color: white;
+}
+
+.play {
+  cursor: pointer;
+  font-size: .6em;
+}
+
+.yt-container {
+  margin: 3px 0;
+}
+
+.pin {
+  display: inline-block;
+}
+
+.less-replies {
+  cursor: pointer;
+  display: inline-block;
+  font-size: .8em;
+  margin: 5px 0;
+}
+
+.load-replies {
+  cursor: pointer;
+  display: inline-block;
+  margin: 5px 0;
+  font-size: .8em;
+}
+
+.Ban-form {
+  width: 80%;
+  margin: auto;
+  margin-bottom: 5px;
+}
+
+.gsearch {
+  font-weight: bold;
+}
+
+#reply-window {
+  position: fixed;
+  z-index: 9;
+	background-color: #E8EFEF;
+	border: 1px solid #697983;
+  border-radius: 5px;
+  text-align: left;
+  padding: 3px;
+}
+
+#window-header {
+  padding: 5px;
+  border-radius: 3px;
+  cursor: move;
+  z-index: 10;
+  background-color: #697983;
+  color: #fff;
+}
+
+.dopen {
+	color: #005566;
+  cursor: pointer;
+}
+
+.dclose {
+  cursor: pointer;
+  float: right;
+}
+
+.less-thread {
+  display: inline-block;
+  font-size: .8em;
+}
+
+.full-thread {
+  display: inline-block;
+  font-size: .8em;
+}
+
+.Boards {
+  border: 1px solid black;
+  width: 80%;
+  margin: auto;
+  margin-top: 20px;
+}
+
+.Boards-title {
+  font-size: 1em;
+  margin: 0;
+  padding: 3px 0;
+  padding-left: 3px;
+  background-color: #697983;
+  color: white;
+}
+
+#img-container {
+  max-width: 90%;
+  margin: 10px auto;
+  text-align: center;
+}
+
+#img-container img {
+  margin: 2.5px;
+}
+
+.nsfw {
+  color: darkred;
+}
+
+#msg-container, #stats {
+  list-style: none;
+  padding: 0;
+  margin: 5px;
+  margin-left: 5px;
+}
+
+#msg-container li, #stats li {
+  margin: 5px 0;
+  font-size: .9em;
+}
+
+#msg-container li a {
+  margin-right: 5px;
+}
+
+#welcome, #stats {
+  margin: 5px;
+  font-size: .9em;
+}
+
+#boards {
+  margin: 20px;
+  text-align: center;
+}
+
+#boards a {
+  margin: 10px;
+}
+
+.Login {
+  text-align: center;
+}
+
+.op {
+  background-color: #d18f4f;
+	padding: 3px;
+	border-radius: 3px;
+	color: white;
+	text-shadow: 1px 1px 1px black;
+  font-size: .75em;
+}
+ /* Dropdown Button */
+.dropbtn {
+  background-color: transparent;
+  color: black;
+  padding: 0;
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.dropbtn-open {
+  transform: rotate(90deg);
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: white;
+	border: 1px solid #697983;
+	border-bottom: 0;
+  z-index: 1;
+  min-width: 6rem;
+}
+
+/* Links inside the dropdown */
+.dropitem {
+  width: 100%;
+  border: 0;
+  text-align: left;
+  background-color: white;
+  cursor: pointer;
+}
+
+.dropdown-content a{
+  font-size: .8em;
+  color: black;
+  padding: 2px;
+  text-decoration: none;
+	border-bottom: 1px solid #697983;
+  display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #ddd}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {display:block;}
+
+.Ban {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.Reply-floating {
+	padding: 10px 5px;
+	background-color: #d7dddd;
+	border: 1px solid #697983;
+  position: absolute;
+}
+
+.Reply-video {
+	float: left;
+	margin-right: 5px;
+  cursor: pointer;
+}
+
+.Reply-list {
+  margin-top: 20px;
+}
+
+.reps {
+  font-size: .85em;
+}
+
+a.reps{
+  margin-right: 3px;
+}
+
+#card-list {
+  padding: 0;
+  margin: 0;
+  text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+  body {
+    margin: 0;
+  }
+  .Formulario textarea {
+    margin: 0;
+    width: 100%;
+  }
+  .Thread-image,.Thread-video,.Reply-image,.Reply-video {
+    max-width: 100px;
+    max-height: 100px;
+    margin-left: 2px;
+  }
+  .Thread-info {
+    line-height: 2;
+  }
+  .Respuesta-flecha {
+    display: none;
+  }
+  .Replies {
+    margin-top: 2rem;
+    clear: both;
+  }
+  .Respuesta-cuerpo {
+    display: block;
+    margin: .5rem;
+  }
+  .Boards {
+    width: 100%;
+    border: 0;
+  }
+  .Boards:last-of-type {
+    border-bottom: 1px solid black;
+  }
+  .Pagination {
+    display: block;
+    margin-bottom: 10px;
+    border-left: 0;
+    border-right: 0;
+  }
+  .Delete-form {
+    float: none;
+    margin-bottom: 10px;
+  }
+  .load-replies,.less-replies {
+    margin-left: 1rem;
+  }
+  .Card-body {
+    display: none;
+  }
+  .Card .Hilo-title {
+    margin: 5px 0;
+  }
+}
