@@ -1,6 +1,6 @@
 import sqlite3
 import json
-from utils import board_directory, get_directory_size
+from utils import board_directory, get_directory_size, remove_media
 from bottle import ConfigDict
 
 config = ConfigDict()
@@ -257,12 +257,27 @@ class Thread:
 
         thread_count = c.fetchone()[0]
 
-        if thread_count > int(config['threads.max_active']):
+        if thread_count >= int(config['threads.max_active']):
 
             c.execute("SELECT * FROM threads WHERE is_reply = FALSE and board = ? ORDER BY date LIMIT ?",
                     (self.board_name, thread_count - int(config['threads.max_active'])))
 
             rows = c.fetchall()
+
+            for row in rows:
+
+                thread = Thread(*row)
+            
+                if thread.image: remove_media(thread.image)
+
+                for reply in thread.replies:
+
+                    if reply.image: remove_media(reply.image)
+
+                    reply.delete()
+
+                thread.delete()
+
 
         c.execute("INSERT INTO threads VALUES (strftime('%m/%d/%Y %H:%M'),?,?,?,?,?,?,?,?,?,datetime('now'),?,?,?,?,?)",
                 (self.board_name, self.author, self.filename,
