@@ -24,5 +24,7 @@ To start the app:
 
 To change stuff edit `imageboard.conf`
 
+Admin dashboard is at /admin for which you'll first have to go through /login.
+
 ## Notes
 - The function to limit the size of uploads only works in production mode.
