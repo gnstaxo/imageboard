@@ -1,4 +1,4 @@
-# imageboard
+# Imageboard
 Imageboard engine written in Python.
 ![Screenshot](https://0x0.st/iv0g.png)
 
