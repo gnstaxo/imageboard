@@ -7,15 +7,15 @@ Imageboard engine written in Python.
 - Green (>) and Pink (<) text
 - Quick replies
 - Reply previews
-- Mod and Admin panels
+- Mod and Admin functions
 - Youtube embeds
 - Mobile responsive design (through CSS media queries)
 
 ## Dependencies
-- bottle
-- pillow
-- waitress
-- filetype
+- bottle: Web framework.
+- filetype: To make sure people upload valid files.
+- Pillow: To create thumbnails and get image dimensions.
+- waitress: Production server.
 
 ## Usage
 To start the app:

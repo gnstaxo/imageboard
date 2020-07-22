@@ -268,7 +268,7 @@ class Thread:
 
                 thread = Thread(*row)
             
-                if thread.image: remove_media(thread.image)
+                remove_media(thread.image)
 
                 for reply in thread.replies:
 
@@ -614,6 +614,7 @@ class Board:
         for row in rows: LATEST['messages'].append(Thread(*row))
 
         c.execute('SELECT * FROM threads WHERE image IS NOT "" ORDER BY date DESC LIMIT 10')
+
         rows = c.fetchall()
 
         for row in rows: LATEST['images'].append(Thread(*row))

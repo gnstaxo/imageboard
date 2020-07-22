@@ -24,7 +24,7 @@
     No images have been uploaded.
     % end
     % for thread in Board.latest()['images']:
-      % if thread.image and not Board.get_board(thread.board_name).nsfw:
+      % if thread.image and (Board.get_board(thread.board_name).nsfw == (show_nsfw == 'True') or not Board.get_board(thread.board_name).nsfw):
           % if thread.is_reply:
             <a href="/{{thread.board_name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">
             % if not is_video(thread.filename):

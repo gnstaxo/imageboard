@@ -33,11 +33,18 @@ def get_current_user(req):
 
     return current_user
 
+def check_admin(req):
+    logged_cookie = req.get_cookie("logged")
+    if bool(logged_cookie):
+        if logged_cookie != config['admin.token']: return 1
+    else: return 1
+
 @get('/')
 @view('home')
 def home():
     return dict(title=config['app.title'],
-            welcome_message=config['app.welcome_message'])
+            welcome_message=config['app.welcome_message'],
+            show_nsfw=config['threads.show_nsfw'])
 
 @get('/<board_name>/<page:int>')
 @get('/<board_name>/')
@@ -328,10 +335,8 @@ def unban(board_name, user):
 @post('/add_board')
 def add_board():
 
-    logged_cookie = request.get_cookie("logged")
-    if bool(logged_cookie):
-        if logged_cookie != config['admin.token']: return abort(403, "You are not allowed to do this.")
-    else: return abort(403, "You are not allowed to do this.")
+    if check_admin(request) == 1:
+        return abort(403, "You are not allowed to do this.")
 
     board_name = request.forms.get("name").strip()
     board_title = request.forms.get("title").strip()
@@ -346,10 +351,8 @@ def add_board():
 @post('/del_board/<board_name>')
 def del_board(board_name):
 
-    logged_cookie = request.get_cookie("logged")
-    if bool(logged_cookie):
-        if logged_cookie != config['admin.token']: return abort(403, "You are not allowed to do this.")
-    else: return abort(403, "You are not allowed to do this.")
+    if check_admin(request) == 1:
+        return abort(403, "You are not allowed to do this.")
 
     Board.delete_board(board_name)
     board_directory(board_name, remove=True)
@@ -359,10 +362,8 @@ def del_board(board_name):
 @post('/mod')
 def mod():
 
-    logged_cookie = request.get_cookie("logged")
-    if bool(logged_cookie):
-        if logged_cookie != config['admin.token']: return abort(403, "You are not allowed to do this.")
-    else: return abort(403, "You are not allowed to do this.")
+    if check_admin(request) == 1:
+        return abort(403, "You are not allowed to do this.")
 
     user = request.forms.get("user").strip()
     board = request.forms.get("board")
@@ -377,10 +378,8 @@ def mod():
 @post('/new_mod')
 def add_mod():
 
-    logged_cookie = request.get_cookie("logged")
-    if bool(logged_cookie):
-        if logged_cookie != config['admin.token']: return abort(403, "You are not allowed to do this.")
-    else: return abort(403, "You are not allowed to do this.")
+    if check_admin(request) == 1:
+        return abort(403, "You are not allowed to do this.")
 
     user = request.forms.get("user").strip()
     board = request.forms.get("board")
@@ -416,12 +415,13 @@ def thread_close(board_name, refnum):
 if __name__ == '__main__':
 
     if not path.isfile('imageboard.db'): create_database()
+    if not path.isdir('uploads'): board_directory('uploads')
 
     if config['app.production'] == 'False':
 
         run(debug=True, reloader=True, host='0.0.0.0', port=8080)
 
-    elif config['app.production'] == 'True':
+    else:
         upload_max_size = int(config['app.upload_max_size'])
         application = default_app()
         serve(application, listen=config['app.domain']+':80',
