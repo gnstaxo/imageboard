@@ -66,6 +66,8 @@ def get_board(board_name, page=0):
         offset = number - per_page
         threads = board.threads[offset:number]
 
+        if len(threads) < 1: return abort(404, "This page doesn't exist.")
+
     else: threads = board.threads[:per_page]
 
     report_reasons = loads(config['reports.reasons'])
@@ -342,7 +344,7 @@ def add_board():
 
     board_name = request.forms.get("name").strip().lower()
 
-    if any( char in list(punctuation) for char in board_name ):
+    if any( char in list(punctuation + ' ') for char in board_name ):
         return abort(400, "Boards can't have symbols in their name.")
 
     if Board.get_board(board_name) != 1:

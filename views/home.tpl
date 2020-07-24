@@ -13,7 +13,7 @@
       No boards have been created.
     % end
     % for bname, btitle in Board.boards().items():
-      <a href="/{{bname}}/">/{{bname}}/ - {{btitle.board_title}}</a>
+      <a href="/{{bname}}/" style="display:inline-block;">/{{bname}}/ - {{btitle.board_title}}</a>
     % end
   </div>
 </div>
