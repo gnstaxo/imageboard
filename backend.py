@@ -5,6 +5,7 @@ from board import Board, Thread, Ip, Report
 from utils import random_name, file_validation, remove_media, board_directory
 from json import loads
 from os import path
+from string import punctuation
 from waitress import serve
 from create_database import create_database
 
@@ -46,8 +47,9 @@ def home():
             welcome_message=config['app.welcome_message'],
             show_nsfw=config['threads.show_nsfw'])
 
-@get('/<board_name>/<page:int>')
 @get('/<board_name>/')
+@get('/<board_name:re:[a-z0-9]+>')
+@get('/<board_name>/<page:int>')
 @view('board')
 def get_board(board_name, page=0):
 
@@ -338,7 +340,14 @@ def add_board():
     if check_admin(request) == 1:
         return abort(403, "You are not allowed to do this.")
 
-    board_name = request.forms.get("name").strip()
+    board_name = request.forms.get("name").strip().lower()
+
+    if any( char in list(punctuation) for char in board_name ):
+        return abort(400, "Boards can't have symbols in their name.")
+
+    if Board.get_board(board_name) != 1:
+        return abort(400, "A board with this name already exists.")
+
     board_title = request.forms.get("title").strip()
     nsfw = bool(request.forms.get("nsfw"))
 

@@ -1,5 +1,4 @@
 # Imageboard
-Imageboard engine written in Python.
 ![Screenshot](https://0x0.st/iv0g.png)
 
 ## Features
@@ -18,7 +17,11 @@ Imageboard engine written in Python.
 - waitress: Production server.
 
 ## Usage
-To start the app:
+First, get the dependencies:
+
+`$ pip install -r requirements.txt`
+
+Then you can run the app:
 
 `$ ./backend`
 
