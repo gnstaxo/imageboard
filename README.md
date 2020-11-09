@@ -23,7 +23,7 @@ First, get the dependencies:
 
 Then you can run the app:
 
-`$ ./backend`
+`$ python backend.py`
 
 To change stuff edit `imageboard.conf`
 
