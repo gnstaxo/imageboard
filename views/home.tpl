@@ -20,23 +20,23 @@
 <div class="Boards">
   <h2 class="Boards-title">Latest images</h2>
   <div id="img-container">
-    % if len(Board.latest()['images']) == 0:
+    % threads_to_show = [x for x in Board.latest()['images'] if x.image and (Board.get_board(x.board_name).nsfw == (show_nsfw == 'True') or not Board.get_board(x.board_name).nsfw)]
+		% if len(threads_to_show) == 0:
     No images have been uploaded.
-    % end
-    % for thread in Board.latest()['images']:
-      % if thread.image and (Board.get_board(thread.board_name).nsfw == (show_nsfw == 'True') or not Board.get_board(thread.board_name).nsfw):
-          % if thread.is_reply:
+		% else:
+      % for thread in threads_to_show:
+        % if thread.is_reply:
             <a href="/{{thread.board_name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">
             % if not is_video(thread.filename):
               <img src="/{{thread.image[:-4]}}s.jpg"></a>
             % end
-          % else:
-            <a href="/{{thread.board_name}}/thread/{{thread.refnum}}" style="text-decoration:none;">
-              % if not is_video(thread.filename):
-                <img src="/uploads/{{thread.board_name}}/{{thread.refnum}}s.jpg">
-              % end
-            </a>
-          % end
+        % else:
+          <a href="/{{thread.board_name}}/thread/{{thread.refnum}}" style="text-decoration:none;">
+            % if not is_video(thread.filename):
+              <img src="/uploads/{{thread.board_name}}/{{thread.refnum}}s.jpg">
+            % end
+          </a>
+        % end
       % end
     % end
   </div>
@@ -44,17 +44,19 @@
 <div class="Boards">
   <h2 class="Boards-title">Latest messages</h2>
     <ul id="msg-container">
-      % if len(Board.latest()['images']) == 0:
-      No messages haven been created.
-      % end
-      % for thread in Board.latest()['messages']:
-        <li>
-          % if thread.is_reply:
-            <a href="/{{thread.board_name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">>>/{{thread.board_name}}/{{thread.replyrefnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
-          % else:
-            <a href="/{{thread.board_name}}/thread/{{thread.refnum}}">>>/{{thread.board_name}}/{{thread.refnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
-          % end
-        </li>
+      % messages_to_show = [x for x in Board.latest()['messages'] if Board.get_board(x.board_name).nsfw == (show_nsfw == 'True')]
+      % if len(messages_to_show) == 0:
+      No messages have been created.
+      % else:
+        % for thread in Board.latest()['messages']:
+          <li>
+            % if thread.is_reply:
+              <a href="/{{thread.board_name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">>>/{{thread.board_name}}/{{thread.replyrefnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
+            % else:
+              <a href="/{{thread.board_name}}/thread/{{thread.refnum}}">>>/{{thread.board_name}}/{{thread.refnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
+            % end
+          </li>
+        % end
       % end
     </ul>
 </div>
