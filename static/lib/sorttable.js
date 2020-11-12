@@ -8,9 +8,9 @@
 
 jQuery.fn.addSortWidget = function(options){
 	var defaults = {
-		img_asc: "/static/asc_sort.gif",	
-        img_desc: "/static/desc_sort.gif",	
-		img_nosort: "/static/no_sort.gif",		
+		img_asc: "/static/img/asc_sort.gif",	
+        img_desc: "/static/img/desc_sort.gif",	
+		img_nosort: "/static/img/no_sort.gif",		
 	};
 	
 	var options = $.extend({}, defaults, options),
