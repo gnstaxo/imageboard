@@ -33,10 +33,10 @@
     % end
   {{thread.date}} No. <span class="dopen">{{thread.refnum}}</span>
   % if thread.pinned:
-    <img class="pin" src="/static/sticky.gif"></img>
+    <img class="pin" src="/static/img/sticky.gif"></img>
   % end
   % if thread.closed:
-    <img class="pin" src="/static/locked.gif"></img>
+    <img class="pin" src="/static/img/locked.gif"></img>
   % end
   % if not is_detail:
     <a class="btn Thread-repbtn" href="/{{board_name}}/thread/{{thread.refnum}}">Reply</a>
