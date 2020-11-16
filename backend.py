@@ -224,8 +224,8 @@ def post_thread(board_name):
         "board": board.name,
         "author": author,
         "refnum": refnum,
-        "date": datetime.now().replace(microsecond=0),
-        "bumped_at": datetime.now(),
+        "date": datetime.now().strftime("%Y-%m-%d %H:%I"),
+        "bumped_at": datetime.now().replace(microsecond=0),
         "filename": upload.filename,
         "image": save_path,
         "title": title,
@@ -310,7 +310,7 @@ def post_reply(board_name, refnum):
         "refnum": no,
         "is_reply": True,
         "replyrefnum": refnum,
-        "date": datetime.now().replace(microsecond=0),
+        "date": datetime.now().strftime("%Y-%m-%d %H:%I"),
         "filename": filename,
         "image": save_path,
         "content": content,
@@ -332,7 +332,7 @@ def post_reply(board_name, refnum):
                     replylist.append(no)
                     Post.update(replylist = dumps(replylist)).where((Post.board == board.name) & (Post.refnum == ref)).execute()
 
-    Post.update(bumped_at = datetime.now()).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
+    Post.update(bumped_at = datetime.now().replace(microsecond=0)).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
 
     Board.update(lastrefnum = no + 1).where(Board.name == board_name).execute()
 
@@ -351,7 +351,7 @@ def delete_thread(board_name):
         report_reasons = loads(config['reports.reasons'])
         if reason not in report_reasons: return redirect(f'/{board_name}/')
         for refnum in list(form)[:-1]:
-            report = Report(reason=reason, refnum=refnum, board=board_name, date=datetime.now())
+            report = Report(reason=reason, refnum=refnum, board=board_name, date=datetime.now().replace(microsecond=0))
             report.save()
     else:
         for refnum in form:
@@ -394,7 +394,7 @@ def ban(board_name):
 
     user = form.get('user').strip()
 
-    Anon.update(banned=True, ban_reason=reason, ban_date=datetime.now()).where(Anon.name == user).execute()
+    Anon.update(banned=True, ban_reason=reason, ban_date=datetime.now().replace(microsecond=0)).where(Anon.name == user).execute()
 
     return redirect(f"/{board_name}/mod")
 

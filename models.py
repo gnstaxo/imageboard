@@ -34,7 +34,7 @@ class Anon(Model):
     banned = BooleanField(default=False)
     mod = CharField(default="")
     ban_reason = CharField(null=True)
-    ban_date = DateTimeField(null=True)
+    ban_date = CharField(null=True)
 
     class Meta:
         database = db
@@ -53,7 +53,7 @@ class Post(Model):
     author = CharField()
     refnum = IntegerField()
     replyrefnum = IntegerField(null=True)
-    date = DateTimeField()
+    date = CharField()
     bumped_at = DateTimeField(null=True)
     filename = CharField()
     image = CharField()
@@ -73,7 +73,7 @@ class Post(Model):
 class Report(Model):
     reason = CharField()
     refnum = IntegerField()
-    date = DateTimeField()
+    date = CharField()
     board = CharField()
 
     class Meta:
