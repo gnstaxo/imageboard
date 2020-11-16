@@ -92,8 +92,10 @@ def ban_info():
 @view('detail')
 def get_thread(board_name, refnum):
 
-    board = Board.get(Board.name == board_name)
-    if board == 1: return abort(404, "This page doesn't exist.")
+    try:
+        board = Board.get(Board.name == board_name)
+    except:
+        return abort(404, "This page doesn't exist.")
 
     try:
         thread = Post.get((Post.refnum == refnum) & (Post.board == board.name) & (Post.is_reply != True))
@@ -127,8 +129,10 @@ def catalog(board_name):
 @view('reports')
 def reports(board_name):
 
-    board = Board.get(Board.name == board_name)
-    if board == 1: return abort(404, "This page doesn't exist.")
+    try:
+        board = Board.get(Board.name == board_name)
+    except:
+        return abort(404, "This page doesn't exist.")
 
     current_user = get_current_user(request)
     
