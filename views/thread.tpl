@@ -1,4 +1,5 @@
 % from utils import author_color, image_size, is_video
+% from models import Post
 <div class="Thread" id="{{thread.refnum}}">
   <div class="Thread-meta">
   [<span class="hide-thread" title="Hide thread">=</span>]
@@ -33,10 +34,10 @@
     % end
   {{thread.date}} No. <span class="dopen">{{thread.refnum}}</span>
   % if thread.pinned:
-    <img class="pin" src="/static/sticky.gif"></img>
+    <img class="pin" src="/static/img/sticky.gif"></img>
   % end
   % if thread.closed:
-    <img class="pin" src="/static/locked.gif"></img>
+    <img class="pin" src="/static/img/locked.gif"></img>
   % end
   % if not is_detail:
     <a class="btn Thread-repbtn" href="/{{board_name}}/thread/{{thread.refnum}}">Reply</a>
@@ -55,9 +56,10 @@
   % include('thread_text', board_name=board_name, board=board)
   </div>
   <div class="Replies">
-  % replies = thread.replies if is_detail else thread.replies[-4:]
-  % if not is_detail and thread.reply_count > 4:
-    <span class="load-replies btn">Load {{thread.reply_count - 4}} replies</span>
+  % query = Post.select().where((Post.board == board_name) & (Post.is_reply == True) & (Post.replyrefnum == thread.refnum)).order_by(Post.date.asc())
+  % replies = query if is_detail else query.limit(4)
+  % if not is_detail and query.count() > 4:
+    <span class="load-replies btn">Load {{query.count() - 4}} replies</span>
   % end
   % for reply in replies:
   % include('reply', reply=reply)

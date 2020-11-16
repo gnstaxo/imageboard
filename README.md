@@ -15,6 +15,7 @@
 - filetype: To make sure people upload valid files.
 - Pillow: To create thumbnails and get image dimensions.
 - waitress: Production server.
+- peewee: SQL ORM.
 
 ## Usage
 First, get the dependencies:
@@ -31,3 +32,4 @@ Admin dashboard is at /admin for which you'll first have to go through /login.
 
 ## Notes
 - The function to limit the size of uploads only works in production mode.
+- To use a MySQL database install pymysql, and psycopg2 for Postgresql.

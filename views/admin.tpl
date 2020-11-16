@@ -1,11 +1,11 @@
 % rebase('base', title="Administration")
-% from board import Board
+% from models import Board
 <h3 class="Title">Mods</h3>
 <form class="Ban-form" action="/new_mod" method="POST">
 	<input name="user" type="text" placeholder="user">
   <select name="board">
-    % for board in Board.boards():
-    <option value="{{board}}">{{board}}</option>
+    % for board in Board.select():
+    <option value="{{board.name}}">{{board.name}}</option>
     % end
   </select>
 	<input type="submit" value="Add">
@@ -24,16 +24,16 @@
     % for mod in mods:
       <tr>
       	<td>{{mod.ip}}</td>
-      	<td>{{mod.user}}</td>
+      	<td>{{mod.name}}</td>
       	<td>{{mod.mod.replace("::", ", ").strip(':')}}</td>
         <td>
           <form action="/mod" method="POST">
             <select name="board">
-              % for board in Board.boards():
-              <option value="{{board}}">{{board}}</option>
+              % for board in Board.select():
+              <option value="{{board.name}}">{{board.name}}</option>
               % end
             </select>
-	    <input type="text" name="user" value="{{mod.user}}" hidden>
+	    <input type="text" name="user" value="{{mod.name}}" hidden>
             <input type="submit" name="rm" value="Remove">
             <input type="submit" name="add" value="Add">
         </td>
@@ -61,12 +61,12 @@
     </tr>
   </thead>
   <tbody>
-    % for name,title in boards.items():
+    % for board in boards:
       <tr>
-        <td>{{name}}</td>
-        <td>{{title.board_title}}</td>
+        <td>{{board.name}}</td>
+        <td>{{board.title}}</td>
         <td>
-          <form action="/del_board/{{name}}" method="POST">	
+          <form action="/del_board/{{board.name}}" method="POST">	
             <input type="submit" value="Delete"></input>
           </form>
         </td>

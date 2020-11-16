@@ -1,12 +1,12 @@
-% from board import Board
+% from models import Board
 
 <div class="Menu">
 [<a href="/">Home</a>]
-% if len(Board.boards()) > 0:
+% if Board.select().count() > 0:
 [
-  % for bname, btitle in Board.boards().items():
-    <a href="/{{bname}}/" title="{{btitle.board_title}}">{{bname}}</a>
-    % if list(Board.boards())[-1] != bname:
+  % for board in Board.select():
+    <a href="/{{board.name}}/" title="{{board.title}}">{{board.name}}</a>
+    % if Board.select()[-1].name != board.name:
     /
     % end
   % end

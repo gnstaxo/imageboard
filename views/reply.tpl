@@ -1,5 +1,6 @@
 % from utils import author_color
 % from json import loads
+% from models import Post
 <div id="{{reply.refnum}}" class="Reply">
 	<div class="Respuesta-flecha">>></div>
 	<div class="Respuesta-cuerpo">
@@ -8,7 +9,7 @@
 	    % if reply.by_mod:
 		    <span class="role">Mod</span>
 	    % end
-	    % if board.get_thread(reply.replyrefnum).author == reply.author:
+	    % if Post.get(Post.refnum == reply.replyrefnum).author == reply.author:
 		    <span class="op">OP</span>
 	    % end
 	{{reply.date}} <a style="color:black;" href="/{{board_name}}/thread/{{reply.replyrefnum}}#{{reply.refnum}}">No.</a> <span class="dopen">{{reply.refnum}}</span>

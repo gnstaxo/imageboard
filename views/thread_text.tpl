@@ -1,5 +1,6 @@
-% import re
+% from re import search
 % from json import loads
+% from models import Post
 % def make_refs(word):
   % if word[:2] == ">>":
     % ref = word[2:]
@@ -9,22 +10,23 @@
       >>{{ref}}
       % return
     % end
-    % if ref > board.last_id:
+    % if ref > board.lastrefnum:
       >>{{ref}}
       % return
     % end
-    % thread_ref = board.get_thread(ref)
-    % if thread_ref == 1:
+    % try:
+      % thread_ref = Post.get((Post.refnum == ref) & (Post.board == board_name))
+    % except:
     	>>{{ref}}
       % return
     % end
     % if thread_ref.is_reply:
-      % main_thread = board.get_thread(thread_ref.replyrefnum)
+      % main_thread = Post.get(Post.refnum == thread_ref.replyrefnum)
       <a class="reference" href="/{{board_name}}/thread/{{thread_ref.replyrefnum}}#{{ref}}">{{word}}
       % if main_thread.author == thread_ref.author:
       (OP)
       % end
-      % if thread_ref.author == current_user.user and main_thread.author != current_user.user:
+      % if thread_ref.author == current_user.name and main_thread.author != current_user.name:
       (YOU)
       % end
       </a>
@@ -52,7 +54,7 @@
     <span class="green-text">{{line}}</span><br>
   % elif line.startswith("<"): 
     <span class="pink-text">{{line}}</span><br>
-  % elif re.search(r'(https?://)(www.)?youtu(be.com|.be)/(watch\?v=)?[A-Za-z0-9-_]{11}\s?$', line):
+  % elif search(r'(https?://)(www.)?youtu(be.com|.be)/(watch\?v=)?[A-Za-z0-9-_]{11}\s?$', line):
     <div class="yt-container">
       <span class="yt-url"> {{line}}</span> <span class="btn play">Play</span><br>
     </div>

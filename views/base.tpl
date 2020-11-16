@@ -25,7 +25,7 @@
       <script src="/static/js/videos.js"></script>
       <script src="/static/js/content-length.js"></script>
       % if f':{board_name}:' in current_user.mod:
-        <script src="/static/lib/mod-actions.js"></script>
+        <script src="/static/js/mod-actions.js"></script>
       % end
       % if defined('reports'):
         <script src="/static/lib/sorttable.js"></script>

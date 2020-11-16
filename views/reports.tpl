@@ -1,4 +1,5 @@
 % rebase('base', title="Moderation")
+% from models import Post
 <h3 class="Title">Reports</h3>
 <table class="Reports" id="reports">
   <thead>
@@ -13,7 +14,7 @@
   </thead>
   <tbody>
   % for report in reports:
-    % thread = board.get_thread(report.refnum)
+    % thread = Post.get((Post.refnum == report.refnum) & (Post.board == board.name))
     <tr>
       <td>{{report.refnum}}</td>
       <td>{{thread.author}}</td>
@@ -25,9 +26,9 @@
       <td>{{report.reason}}</td>
       <td>{{report.date}}</td>
       % if thread.is_reply:
-        <td style="text-align: center;">[<a href="/{{board.board_name}}/thread/{{thread.replyrefnum}}#{{report.refnum}}">View</a>]</td>
+        <td style="text-align: center;">[<a href="/{{board.name}}/thread/{{thread.replyrefnum}}#{{report.refnum}}">View</a>]</td>
       % else:
-        <td style="text-align: center;">[<a href="/{{board.board_name}}/thread/{{report.refnum}}">View</a>]
+        <td style="text-align: center;">[<a href="/{{board.name}}/thread/{{report.refnum}}">View</a>]
       % end
     </tr>
   % end
@@ -58,11 +59,11 @@
     % for ban in bans:
       <tr>
       	<td>{{ban.ip}}</td>
-      	<td>{{ban.user}}</td>
+      	<td>{{ban.name}}</td>
       	<td>{{ban.ban_reason}}</td>
       	<td>{{ban.ban_date}}</td>
         <td>
-          <form action="/{{board_name}}/unban/{{ban.user}}" method="POST">
+          <form action="/{{board_name}}/unban/{{ban.name}}" method="POST">
             <input type="submit" name="dall" value="Delete all posts">
             <input type="submit" name="unban" value="Unban">
           </form>

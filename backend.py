@@ -1,13 +1,13 @@
 #!/bin/env python
 from bottle import (run, static_file, request, view, redirect,
         abort, get, post, ConfigDict, response, default_app, error)
-from board import Board, Thread, Ip, Report
-from utils import random_name, file_validation, remove_media, board_directory
-from json import loads
+from utils import random_name, file_validation, remove_media, board_directory, get_directory_size
+from json import loads, dumps
 from os import path
 from string import punctuation
 from waitress import serve
-from create_database import create_database
+from models import db, Post, Anon, Board, Report
+from datetime import datetime
 
 config = ConfigDict()
 config.load_config('imageboard.conf')
@@ -23,14 +23,13 @@ def send_upload(filename):
 def get_current_user(req):
     ip = req.get('REMOTE_ADDR')
 
-    if Ip.exists(ip):
+    try:
+        current_user = Anon.get(Anon.ip == ip)
+    except:
+        anon = Anon(ip = ip, name = random_name())
+        anon.save()
 
-        current_user = Ip.get_ip(ip)
-    else:
-        user = Ip(ip, random_name())
-        user.create()
-
-        current_user = user
+        current_user = anon
 
     return current_user
 
@@ -43,40 +42,39 @@ def check_admin(req):
 @get('/')
 @view('home')
 def home():
+    show_nsfw = ('True' == config['threads.show_nsfw'])
+    active_content_size = get_directory_size('uploads')
+    number_of_messages = Post.select().count()
     return dict(title=config['app.title'],
             welcome_message=config['app.welcome_message'],
-            show_nsfw=config['threads.show_nsfw'])
+            show_nsfw=show_nsfw, active_content_size=active_content_size, number_of_messages=number_of_messages)
 
 @get('/<board_name>/')
 @get('/<board_name:re:[a-z0-9]+>')
 @get('/<board_name>/<page:int>')
 @view('board')
-def get_board(board_name, page=0):
+def get_board(board_name, page=1):
 
-    board = Board.get_board(board_name)
-    if board == 1: return abort(404, "This page doesn't exist.")
+    try:
+        board = Board.get(Board.name == board_name)
+    except:
+        abort(404, "This page doesn't exist.")
 
     current_user = get_current_user(request)
 
     per_page = int(config['threads.per_page'])
 
-    if page:
+    query = Post.select().where((Post.board == board_name) & (Post.is_reply == False)).order_by(Post.pinned.desc(), Post.bumped_at.desc())
 
-        number = (page + 1) * per_page 
-        offset = number - per_page
-        threads = board.threads[offset:number]
-
-        if len(threads) < 1: return abort(404, "This page doesn't exist.")
-
-    else: threads = board.threads[:per_page]
+    threads = query.paginate(page, per_page)
 
     report_reasons = loads(config['reports.reasons'])
 
     return dict(
-            board_name=board.board_name, board_title=board.board_title,
+            board_name=board.name, board_title=board.title,
             threads=threads, board=board, current_page=page,
             is_detail = False, current_user = current_user,
-            thread_count=board.thread_count,
+            thread_count=query.count(),
             max_file_size=config['app.upload_max_size'],
             maxlength=config['threads.content_max_length'],
             per_page=per_page, reasons=report_reasons
@@ -94,16 +92,17 @@ def ban_info():
 @view('detail')
 def get_thread(board_name, refnum):
 
-    board = Board.get_board(board_name)
+    board = Board.get(Board.name == board_name)
     if board == 1: return abort(404, "This page doesn't exist.")
 
-    thread = board.get_thread(refnum)
-
-    if thread.is_reply: abort(404, "This page doesn't exist.")
+    try:
+        thread = Post.get((Post.refnum == refnum) & (Post.board == board.name) & (Post.is_reply != True))
+    except:
+        abort(404, "This page doesn't exist.")
 
     report_reasons = loads(config['reports.reasons'])
 
-    return dict(board_name=board.board_name, thread=thread, board=board,
+    return dict(board_name=board.name, thread=thread, board=board,
             is_detail=True, current_user=get_current_user(request),
             max_file_size=config['app.upload_max_size'],
             maxlength=config['threads.content_max_length'],
@@ -113,18 +112,22 @@ def get_thread(board_name, refnum):
 @view('catalog')
 def catalog(board_name):
 
-    board = Board.get_board(board_name)
-    if board == 1: return abort(404, "This page doesn't exist.")
+    try:
+        board = Board.get(Board.name == board_name)
+    except:
+        return abort(404, "This page doesn't exist.")
 
-    return dict(threads=board.threads, board_name=board_name,
-            board_title=board.board_title, board=board,
+    query = Post.select().where((Post.board == board_name) & (Post.is_reply == False)).order_by(Post.bumped_at.desc())
+
+    return dict(threads=query, board_name=board.name,
+            board_title=board.title, board=board,
             current_user=get_current_user(request))
 
 @get('/<board_name>/mod')
 @view('reports')
 def reports(board_name):
 
-    board = Board.get_board(board_name)
+    board = Board.get(Board.name == board_name)
     if board == 1: return abort(404, "This page doesn't exist.")
 
     current_user = get_current_user(request)
@@ -134,8 +137,8 @@ def reports(board_name):
 
     report_reasons = loads(config['reports.reasons'])
 
-    return dict(reports=board.reports, board=board,
-            bans=board.bans, current_user=current_user,
+    return dict(reports=Report.select(), board=board,
+            bans=Anon.select().where(Anon.banned == True), current_user=current_user,
             board_name=board_name, reasons=report_reasons)
 
 @get('/admin')
@@ -152,8 +155,8 @@ def admin_panel():
 
     else: return redirect("/")
 
-    return dict(boards=Board.boards(), current_user=current_user,
-            board_name=None, mods=Ip.get_mods())
+    return dict(boards=Board.select(), current_user=current_user,
+            board_name=None, mods=Anon.select().where(Anon.mod != ""))
 
 @get('/login')
 @view('login')
@@ -190,6 +193,8 @@ def post_thread(board_name):
     current_user = get_current_user(request)
     if get_current_user(request).banned: return redirect("/ban_info")
 
+    board = Board.get(Board.name == board_name)
+
     title = request.forms.get('title')
     content = request.forms.get('content')
     upload = request.files.get('upload')
@@ -199,8 +204,8 @@ def post_thread(board_name):
     if len(content) > int(config['threads.content_max_length']):
             return abort(400, "The content exeeds the maximum length.")
 
-    author = current_user.user
-    refnum = Board.get_board(board_name).last_id
+    author = current_user.name
+    refnum = board.lastrefnum
     save_path = file_validation(board_name, refnum, upload)
 
     if len(content.split('\n')) < 10:
@@ -214,13 +219,45 @@ def post_thread(board_name):
     if save_path == 1: return redirect(f"/{board_name}/")
 
     by_mod = (f':{board_name}:' in current_user.mod)
-    pinned = False
 
-    thread = Thread(board_name=board_name, author=author,
-            short_content=short_content, filename=upload.filename,
-            image=save_path, content=content, refnum=refnum,
-            title=title, by_mod=by_mod, pinned=pinned)
-    thread.create()
+    data = {
+        "board": board.name,
+        "author": author,
+        "refnum": refnum,
+        "date": datetime.now().replace(microsecond=0),
+        "bumped_at": datetime.now(),
+        "filename": upload.filename,
+        "image": save_path,
+        "title": title,
+        "content": content,
+        "short_content": short_content,
+        "by_mod": by_mod
+    }
+
+    thread = Post(**data)
+    thread.save()
+
+    Board.update(lastrefnum = refnum + 1).where(Board.name == board_name).execute()
+
+    max_active_threads = int(config['threads.max_active'])
+    query = Post.select().where((Post.board == board.name) & (Post.is_reply == False)).order_by(Post.pinned.desc(), Post.bumped_at.desc())
+
+    if query.count() >= max_active_threads:
+
+        threads_to_delete = query.offset(max_active_threads)
+
+        for thread in threads_to_delete:
+
+            remove_media(thread.image)
+
+            Post.delete().where((Post.board == board.name) & (Post.refnum == thread.refnum)).execute()
+
+            for reply in Post.select().where((Post.board == board.name) & (Post.replyrefnum == thread.refnum)):
+
+                    remove_media(reply.image)
+
+                    Post.delete().where((Post.board == board.name) & (Post.refnum == reply.refnum)).execute()
+
 
     redirect(f"/{board_name}/")
 
@@ -228,11 +265,10 @@ def post_thread(board_name):
 def post_reply(board_name, refnum):
 
     current_user = get_current_user(request)
-
     if get_current_user(request).banned: return redirect("/ban_info")
 
-    board = Board.get_board(board_name)
-    thread = board.get_thread(refnum)
+    board = Board.get(Board.name == board_name)
+    thread = Post.get((Post.refnum == refnum) & (Post.board == board_name))
 
     if thread.closed:
         return abort(423, "You cannot reply because this thread is locked.")
@@ -254,8 +290,8 @@ def post_reply(board_name, refnum):
 
     upload = request.files.get('upload')
 
-    author = current_user.user
-    no = board.last_id
+    author = current_user.name
+    no = board.lastrefnum
 
     filename = ""
     save_path = ""
@@ -268,12 +304,37 @@ def post_reply(board_name, refnum):
         if save_path == 1: return redirect(f"/{board_name}/thread/{refnum}")
         filename = upload.filename
 
-    reply = Thread(board_name=board_name, author=author,
-            filename=filename, image=save_path, content=content, refnum=no,
-            short_content=short_content, is_reply=True,
-            replyrefnum=refnum, by_mod=by_mod)
-    reply.create()
-    thread.bump()
+    data = {
+        "board": board.name,
+        "author": author,
+        "refnum": no,
+        "is_reply": True,
+        "replyrefnum": refnum,
+        "date": datetime.now().replace(microsecond=0),
+        "filename": filename,
+        "image": save_path,
+        "content": content,
+        "short_content": short_content,
+        "by_mod": by_mod
+    }
+
+    reply = Post(**data)
+    reply.save()
+
+    for word in content.split():
+        if word[:2] == ">>":
+            ref = word[2:]
+            if ref.rstrip().isdigit():
+                ref = ref
+                thread_ref = Post.get(Post.refnum == ref)
+                replylist = loads(thread_ref.replylist)
+                if no not in replylist:
+                    replylist.append(no)
+                    Post.update(replylist = dumps(replylist)).where((Post.board == board.name) & (Post.refnum == ref)).execute()
+
+    Post.update(bumped_at = datetime.now()).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
+
+    Board.update(lastrefnum = no + 1).where(Board.name == board_name).execute()
 
     redirect(f"/{board_name}/")
 
@@ -282,7 +343,7 @@ def delete_thread(board_name):
 
     current_user = get_current_user(request)
 
-    board = Board.get_board(board_name)
+    board = Board.get(Board.name == board_name)
     form = dict(request.forms)
 
     if bool(form.get('report')):
@@ -290,19 +351,34 @@ def delete_thread(board_name):
         report_reasons = loads(config['reports.reasons'])
         if reason not in report_reasons: return redirect(f'/{board_name}/')
         for refnum in list(form)[:-1]:
-            report = Report(reason, refnum, board_name=board_name)
-            report.create()
+            report = Report(reason=reason, refnum=refnum, board=board_name, date=datetime.now())
+            report.save()
     else:
         for refnum in form:
-            thread = board.get_thread(refnum)
-            if (thread.author == current_user.user or
+            thread = Post.get((Post.board == board.name) & (Post.refnum == refnum))
+            if (thread.author == current_user.name or
                 f':{board_name}:' in current_user.mod):
+
+                # Remove from replylist
+                for word in thread.content.split():
+                    if word[:2] == ">>":
+                        ref = word[2:]
+                        if ref.rstrip().isdigit():
+                            ref = ref
+                            thread_ref = Post.get((Post.board == board.name) & (Post.refnum == ref))
+                            replylist = loads(thread_ref.replylist)
+                            if thread.refnum in replylist:
+                                replylist.remove(thread.refnum)
+                                Post.update(replylist = replylist).where((Post.board == thread_ref.board) & (Post.refnum == thread_ref.refnum)).execute()
+
+
                 if thread.image: remove_media(thread.image)
                 if not thread.is_reply:
-                    for reply in thread.replies:
+                    for reply in Post.select().where((Post.board == thread.board) & (Post.replyrefnum == thread.refnum)):
                         if reply.image: remove_media(reply.image)
-                        reply.delete()
-                thread.delete()
+                        Post.delete().where((Post.board == thread.board) & (Post.replyrefnum == thread.refnum)).execute()
+                Post.delete().where((Post.board == thread.board) & (Post.refnum == thread.refnum)).execute()
+
 
     redirect(f"/{board_name}/")
 
@@ -318,7 +394,7 @@ def ban(board_name):
 
     user = form.get('user').strip()
 
-    Ip.ban(reason, user=user)
+    Anon.update(banned=True, ban_reason=reason, ban_date=datetime.now()).where(Anon.name == user).execute()
 
     return redirect(f"/{board_name}/mod")
 
@@ -330,9 +406,11 @@ def unban(board_name, user):
 
     form = dict(request.forms)
 
-    if bool(form.get("dall")): Ip.dall(user)
+    if bool(form.get("dall")):
+        Post.delete().where(Post.author == user).execute()
 
-    if bool(form.get("unban")): Ip.unban(user)
+    if bool(form.get("unban")):
+        Anon.update(banned=False, ban_reason=None, ban_date=None).where(Anon.name == user).execute()
 
     return redirect(f"/{board_name}/mod")
 
@@ -342,20 +420,23 @@ def add_board():
     if check_admin(request) == 1:
         return abort(403, "You are not allowed to do this.")
 
-    board_name = request.forms.get("name").strip().lower()
+    name = request.forms.get("name").strip().lower()
 
-    if any( char in list(punctuation + ' ') for char in board_name ):
+    if any( char in list(punctuation + ' ') for char in name ):
         return abort(400, "Boards can't have symbols in their name.")
 
-    if Board.get_board(board_name) != 1:
+    if Board.select().where(Board.name == name).exists():
         return abort(400, "A board with this name already exists.")
 
-    board_title = request.forms.get("title").strip()
-    nsfw = bool(request.forms.get("nsfw"))
+    data = {
+        "name": name,
+        "nsfw": bool(request.forms.get("nsfw")),
+        "title": request.forms.get("title").strip()
+    }
 
-    board = Board(board_name, board_title, nsfw=nsfw)
-    board.create_board()
-    board_directory(board_name)
+    board = Board(**data)
+    board.save()
+    board_directory(name)
 
     return redirect("/admin")
 
@@ -365,7 +446,9 @@ def del_board(board_name):
     if check_admin(request) == 1:
         return abort(403, "You are not allowed to do this.")
 
-    Board.delete_board(board_name)
+    Anon.update(mod = anon.mod.replace(f':{board_name}:', '')).where(Anon.name == anon.name).execute()
+    Board.delete().where(Board.name == board_name).execute()
+    Post.delete().where(Post.board == board_name).execute()
     board_directory(board_name, remove=True)
 
     return redirect("/admin")
@@ -380,9 +463,17 @@ def mod():
     board = request.forms.get("board")
     opts = request.forms
 
-    if bool(opts.get("add")): Ip.add_mod(user, board)
-    if bool(opts.get("rm")): Ip.rm_mod(user, board)
-    if bool(opts.get("rmall")): Ip.rm_all(user, board)
+    anon = Anon.get(Anon.name == user)
+
+    if bool(opts.get("add")):
+        if f':{board}:' not in anon.mod: anon.mod += ":"+board+":"
+        Anon.update(mod = anon.mod).where(Anon.name == anon.name).execute()
+
+    if bool(opts.get("rm")):
+        Anon.update(mod = anon.mod.replace(f':{board}:', '')).where(Anon.name == anon.name).execute()
+
+    if bool(opts.get("rmall")):
+        Anon.update(mod = "").where(Anon.name == anon.name).execute()
 
     return redirect(f"/admin")
 
@@ -395,7 +486,13 @@ def add_mod():
     user = request.forms.get("user").strip()
     board = request.forms.get("board")
 
-    Ip.add_mod(user, board)
+    try:
+        anon = Anon.get(Anon.name == user)
+    except:
+        return abort(404, "User does not exist.")
+
+    if f':{board}:' not in anon.mod: anon.mod += ":"+board+":"
+    Anon.update(mod = anon.mod).where(Anon.name == anon.name).execute()
 
     return redirect(f"/admin")
 
@@ -405,9 +502,12 @@ def thread_pin(board_name, refnum):
     if f':{board_name}:' not in get_current_user(request).mod:
         return abort(404, "This page doesn't exist.")
 
-    board = Board.get_board(board_name)
+    board = Board.get(Board.name == board_name)
 
-    board.get_thread(refnum).pin()
+    thread = Post.get((Post.board == board_name) & (Post.refnum == refnum))
+
+    if thread.pinned: Post.update(pinned = False).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
+    else: Post.update(pinned = True).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
 
     return redirect(f'/{board_name}/')
 
@@ -417,23 +517,27 @@ def thread_close(board_name, refnum):
     if f':{board_name}:' not in get_current_user(request).mod:
         return abort(404, "This page doesn't exist.")
 
-    board = Board.get_board(board_name)
+    board = Board.get(Board.name == board_name)
 
-    board.get_thread(refnum).close()
+    thread = Post.get((Post.board == board_name) & (Post.refnum == refnum))
+
+    if thread.closed: Post.update(closed = False).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
+    else: Post.update(closed = True).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
 
     return redirect(f'/{board_name}/')
 
 if __name__ == '__main__':
 
-    if not path.isfile('imageboard.db'): create_database()
+    db.connect()
+
     if not path.isdir('uploads'): board_directory('uploads')
 
     if config['app.production'] == 'False':
 
-        run(debug=True, reloader=True, host='0.0.0.0', port=8080)
+        run(debug=True, reloader=True, host='127.0.0.1', port=8080)
 
     else:
         upload_max_size = int(config['app.upload_max_size'])
         application = default_app()
-        serve(application, listen=config['app.domain']+':80',
+        serve(application, listen=config['app.domain']+':'+config['app.port'],
                max_request_body_size=upload_max_size * 1024**2)

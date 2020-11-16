@@ -128,4 +128,4 @@ dmypy.json
 .pyre/
 
 # app
-imageboard.db
+librechan.db

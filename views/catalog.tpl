@@ -1,4 +1,5 @@
 % rebase('base.tpl', board_name=board_name, title=f"Catalog of /{board_name}/")
+% from models import Post
 <h1 class="Title">/{{board_name}}/ - {{board_title}}</h1>
 <hr>
 <div id="container">
@@ -24,8 +25,8 @@
         </div>
       </div>
 			<div class="Card-footer">
-				<b>I:</b> {{thread.images_count}}
-				<b>R:</b> {{thread.reply_count}}
+				<b>I:</b> {{Post.select().where((Post.replyrefnum == thread.refnum) & (Post.board == thread.board) & (Post.image != "")).count()}}
+				<b>R:</b> {{Post.select().where((Post.replyrefnum == thread.refnum) & (Post.board == thread.board) ).count()}}
 			</div>
 		</div>
 		</li>
