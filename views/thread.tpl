@@ -28,7 +28,7 @@
     <div class="Thread-info">
     <input type="checkbox" name="{{thread.refnum}}" value="delete">
     <span class="Hilo-title">{{thread.title}}</span>
-    <span class="Author" style="background-color: {{author_color(thread.author)}};">{{thread.author}}</span>
+    <span class="Author" style="background-color: {{author_color(thread.author.name)}};">{{thread.author.name}}</span>
     % if thread.by_mod:
     <span class="role">Mod</span>
     % end
@@ -56,7 +56,7 @@
   % include('thread_text', board_name=board_name, board=board)
   </div>
   <div class="Replies">
-  % query = Post.select().join(Board).where((Board.name == board_name) & (Post.is_reply == True) & (Post.replyrefnum == thread.refnum)).order_by(Post.date.asc())
+  % query = board.posts.where(Post.replyrefnum == thread.refnum).order_by(Post.date.asc())
   % replies = query if is_detail else query.offset(query.count() - 4)
   % if not is_detail and query.count() > 4:
     <span class="load-replies btn">Load {{query.count() - 4}} replies</span>

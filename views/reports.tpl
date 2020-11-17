@@ -13,13 +13,13 @@
     </tr>
   </thead>
   <tbody>
-  % for report in reports:
-    % thread = Post.select().join(Board).where((Post.refnum == report.refnum) & (Board.name == board.name)).get()
+  % for report in board.reports:
+    % thread = board.posts.where(Post.refnum == report.refnum).get()
     <tr>
       <td>{{report.refnum}}</td>
-      <td>{{thread.author}}</td>
+      <td>{{thread.author.name}}</td>
       % if thread.is_reply:
-        <td>{{board.get_thread(thread.replyrefnum).title}}	
+        <td>{{Post.get((Post.refnum == thread.replyrefnum) & (Post.board_id == board.id)).title}}	
       % else:
         <td>{{thread.title}}</td>
       % end

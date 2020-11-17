@@ -5,11 +5,11 @@
 	<div class="Respuesta-flecha">>></div>
 	<div class="Respuesta-cuerpo">
   <input type="checkbox" name="{{reply.refnum}}" value="delete">
-	<span class="Author" style="background-color: {{author_color(reply.author)}};">{{reply.author}}</span>
+	<span class="Author" style="background-color: {{author_color(reply.author.name)}};">{{reply.author.name}}</span>
 	    % if reply.by_mod:
 		    <span class="role">Mod</span>
 	    % end
-	    % if Post.get(Post.refnum == reply.replyrefnum).author == reply.author:
+	    % if Post.get(Post.refnum == reply.replyrefnum).author.name == reply.author.name:
 		    <span class="op">OP</span>
 	    % end
 	{{reply.date}} <a style="color:black;" href="/{{board_name}}/thread/{{reply.replyrefnum}}#{{reply.refnum}}">No.</a> <span class="dopen">{{reply.refnum}}</span>

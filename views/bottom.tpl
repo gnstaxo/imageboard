@@ -1,3 +1,8 @@
+% from bottle import ConfigDict
+% from json import loads
+% config = ConfigDict()
+% config.load_config('imageboard.conf')
+% report_reasons = loads(config['reports.reasons'])
 <div class="Delete-form">
 <table>
   <tbody>
@@ -10,7 +15,7 @@
       <td>
       <select name="report">
           <option selected disabled>Reason:</option>
-        % for reason in reasons:
+        % for reason in report_reasons:
           <option value="{{reason}}">{{reason}}</option>   
         % end
       </select>

@@ -50,7 +50,7 @@ class Board(Model):
 
 class Post(Model):
     board = ForeignKeyField(Board, backref='posts')
-    author = CharField()
+    author = ForeignKeyField(Anon, backref='posts')
     refnum = IntegerField()
     replyrefnum = IntegerField(null=True)
     date = CharField()
@@ -73,7 +73,7 @@ class Report(Model):
     reason = CharField()
     refnum = IntegerField()
     date = DateTimeField()
-    board = CharField()
+    board = ForeignKeyField(Board, backref='reports')
 
     class Meta:
         database = db

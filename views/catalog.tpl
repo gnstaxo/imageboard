@@ -25,11 +25,15 @@
         </div>
       </div>
 			<div class="Card-footer">
-				<b>I:</b> {{Post.select().join(Board).where((Post.replyrefnum == thread.refnum) & (Board.name == thread.board.name) & (Post.image != "")).count()}}
-				<b>R:</b> {{Post.select().join(Board).where((Post.replyrefnum == thread.refnum) & (Board.name == thread.board.name)).count()}}
+				<b>I:</b> {{board.posts.where((Post.replyrefnum == thread.refnum) & (Post.image != "")).count()}}
+				<b>R:</b> {{board.posts.where(Post.replyrefnum == thread.refnum).count()}}
 			</div>
 		</div>
 		</li>
 	% end
 	</ul>
 </div>
+<footer>
+% include('menu')
+% include('foot')
+</footer>
