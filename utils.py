@@ -61,7 +61,7 @@ def remove_media(path):
 
     name, ext = os.path.splitext(path)
 
-    if ext not in ('.mp4', '.webm', '.ogg'): os.remove(path[:-4] + "s.jpg")
+    if ext not in ('.mp4', '.webm', '.ogg'): os.remove(name + "s.jpg")
 
     os.remove(path)
 

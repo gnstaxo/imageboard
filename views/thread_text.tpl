@@ -15,7 +15,7 @@
       % return
     % end
     % try:
-      % thread_ref = Post.get((Post.refnum == ref) & (Post.board == board_name))
+      % thread_ref = Post.select().join(Board).where((Post.refnum == int(ref)) & (Board.name == board_name)).get()
     % except:
     	>>{{ref}}
       % return
@@ -34,7 +34,7 @@
       <a class="reference" href="/{{board_name}}/thread/{{ref}}">{{word}}
       % if ref == thread.replyrefnum:
        (OP)
-      % elif thread_ref.author == current_user.user:
+      % elif thread_ref.author == current_user.name:
        (YOU)
       % end
       </a>

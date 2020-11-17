@@ -20,20 +20,20 @@
 <div class="Boards">
   <h2 class="Boards-title">Latest images</h2>
   <div id="img-container">
-    % threads_to_show = [x for x in Post.select().where(Post.image != '').limit(10) if Board.get(Board.name == x.board).nsfw == show_nsfw]
-    % if len(threads_to_show) == 0:
+    % images_to_show = Post.select().join(Board).where((Board.nsfw == show_nsfw) & (Post.image != "")).limit(10)
+    % if images_to_show.count() == 0:
     No images have been uploaded.
     % else:
-      % for thread in threads_to_show:
+      % for thread in images_to_show:
         % if thread.is_reply:
-            <a href="/{{thread.board}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">
+            <a href="/{{thread.board.name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">
             % if not is_video(thread.filename):
               <img src="/{{thread.image[:-4]}}s.jpg"></a>
             % end
         % else:
-          <a href="/{{thread.board}}/thread/{{thread.refnum}}" style="text-decoration:none;">
+          <a href="/{{thread.board.name}}/thread/{{thread.refnum}}" style="text-decoration:none;">
             % if not is_video(thread.filename):
-              <img src="/uploads/{{thread.board}}/{{thread.refnum}}s.jpg">
+              <img src="/uploads/{{thread.board.name}}/{{thread.refnum}}s.jpg">
             % end
           </a>
         % end
@@ -44,19 +44,16 @@
 <div class="Boards">
   <h2 class="Boards-title">Latest messages</h2>
     <ul id="msg-container">
-      % messages_to_show = [x for x in Post.select().limit(10) if Board.get(Board.name == x.board).nsfw == show_nsfw]
-      % if len(messages_to_show) == 0:
+      % messages_to_show = Post.select().join(Board).where(Board.nsfw == show_nsfw)
+      % if messages_to_show.count() == 0:
       No messages have been created.
       % else:
         % for thread in messages_to_show:
-          % if Board.get(Board.name == thread.board).nsfw and not show_nsfw:
-            % continue
-          % end
           <li>
             % if thread.is_reply:
-              <a href="/{{thread.board}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">>>/{{thread.board}}/{{thread.replyrefnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
+              <a href="/{{thread.board.name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">>>/{{thread.board.name}}/{{thread.replyrefnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
             % else:
-              <a href="/{{thread.board}}/thread/{{thread.refnum}}">>>/{{thread.board}}/{{thread.refnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
+              <a href="/{{thread.board.name}}/thread/{{thread.refnum}}">>>/{{thread.board.name}}/{{thread.refnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
             % end
           </li>
         % end

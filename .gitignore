@@ -129,3 +129,4 @@ dmypy.json
 
 # app
 librechan.db
+.mksh_history

@@ -1,5 +1,5 @@
 % rebase('base', title="Moderation")
-% from models import Post
+% from models import Post, Board
 <h3 class="Title">Reports</h3>
 <table class="Reports" id="reports">
   <thead>
@@ -14,7 +14,7 @@
   </thead>
   <tbody>
   % for report in reports:
-    % thread = Post.get((Post.refnum == report.refnum) & (Post.board == board.name))
+    % thread = Post.select().join(Board).where((Post.refnum == report.refnum) & (Board.name == board.name)).get()
     <tr>
       <td>{{report.refnum}}</td>
       <td>{{thread.author}}</td>

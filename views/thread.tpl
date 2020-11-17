@@ -1,5 +1,5 @@
 % from utils import author_color, image_size, is_video
-% from models import Post
+% from models import Post, Board
 <div class="Thread" id="{{thread.refnum}}">
   <div class="Thread-meta">
   [<span class="hide-thread" title="Hide thread">=</span>]
@@ -56,8 +56,8 @@
   % include('thread_text', board_name=board_name, board=board)
   </div>
   <div class="Replies">
-  % query = Post.select().where((Post.board == board_name) & (Post.is_reply == True) & (Post.replyrefnum == thread.refnum)).order_by(Post.date.asc())
-  % replies = query if is_detail else query.limit(4)
+  % query = Post.select().join(Board).where((Board.name == board_name) & (Post.is_reply == True) & (Post.replyrefnum == thread.refnum)).order_by(Post.date.asc())
+  % replies = query if is_detail else query.offset(query.count() - 4)
   % if not is_detail and query.count() > 4:
     <span class="load-replies btn">Load {{query.count() - 4}} replies</span>
   % end

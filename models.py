@@ -34,7 +34,7 @@ class Anon(Model):
     banned = BooleanField(default=False)
     mod = CharField(default="")
     ban_reason = CharField(null=True)
-    ban_date = CharField(null=True)
+    ban_date = DateTimeField(null=True)
 
     class Meta:
         database = db
@@ -49,7 +49,7 @@ class Board(Model):
         database = db
 
 class Post(Model):
-    board = CharField()
+    board = ForeignKeyField(Board, backref='posts')
     author = CharField()
     refnum = IntegerField()
     replyrefnum = IntegerField(null=True)
@@ -68,12 +68,11 @@ class Post(Model):
 
     class Meta:
         database = db
-        primary_key = False
 
 class Report(Model):
     reason = CharField()
     refnum = IntegerField()
-    date = CharField()
+    date = DateTimeField()
     board = CharField()
 
     class Meta:

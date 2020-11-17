@@ -64,7 +64,7 @@ def get_board(board_name, page=1):
 
     per_page = int(config['threads.per_page'])
 
-    query = Post.select().where((Post.board == board_name) & (Post.is_reply == False)).order_by(Post.pinned.desc(), Post.bumped_at.desc())
+    query = Post.select().join(Board).where((Board.name == board_name) & (Post.is_reply == False)).order_by(Post.pinned.desc(), Post.bumped_at.desc())
 
     threads = query.paginate(page, per_page)
 
@@ -98,7 +98,8 @@ def get_thread(board_name, refnum):
         return abort(404, "This page doesn't exist.")
 
     try:
-        thread = Post.get((Post.refnum == refnum) & (Post.board == board.name) & (Post.is_reply != True))
+        thread = Post.select().join(Board).where((Post.refnum == refnum) &
+                (Board.name == board_name) & (Post.is_reply == False)).get()
     except:
         abort(404, "This page doesn't exist.")
 
@@ -119,7 +120,7 @@ def catalog(board_name):
     except:
         return abort(404, "This page doesn't exist.")
 
-    query = Post.select().where((Post.board == board_name) & (Post.is_reply == False)).order_by(Post.bumped_at.desc())
+    query = Post.select().join(Board).where((Board.name == board_name) & (Post.is_reply == False)).order_by(Post.bumped_at.desc())
 
     return dict(threads=query, board_name=board.name,
             board_title=board.title, board=board,
@@ -225,10 +226,10 @@ def post_thread(board_name):
     by_mod = (f':{board_name}:' in current_user.mod)
 
     data = {
-        "board": board.name,
+        "board": board,
         "author": author,
         "refnum": refnum,
-        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "bumped_at": datetime.now().replace(microsecond=0),
         "filename": upload.filename,
         "image": save_path,
@@ -241,10 +242,13 @@ def post_thread(board_name):
     thread = Post(**data)
     thread.save()
 
-    Board.update(lastrefnum = refnum + 1).where(Board.name == board_name).execute()
+    board.lastrefnum += 1
+    board.save()
 
     max_active_threads = int(config['threads.max_active'])
-    query = Post.select().where((Post.board == board.name) & (Post.is_reply == False)).order_by(Post.pinned.desc(), Post.bumped_at.desc())
+    query = Post.select().join(Board).where((Board.name == board.name) &
+            (Post.is_reply == False)).order_by(Post.pinned.desc(),
+            Post.bumped_at.desc())
 
     if query.count() >= max_active_threads:
 
@@ -252,15 +256,13 @@ def post_thread(board_name):
 
         for thread in threads_to_delete:
 
+            thread.delete_instance()
             remove_media(thread.image)
 
-            Post.delete().where((Post.board == board.name) & (Post.refnum == thread.refnum)).execute()
+            for reply in Post.select().join(Board).where((Board.name == board.name) & (Post.replyrefnum == thread.refnum)):
 
-            for reply in Post.select().where((Post.board == board.name) & (Post.replyrefnum == thread.refnum)):
-
+                    reply.delete_instance()
                     remove_media(reply.image)
-
-                    Post.delete().where((Post.board == board.name) & (Post.refnum == reply.refnum)).execute()
 
 
     redirect(f"/{board_name}/")
@@ -272,7 +274,7 @@ def post_reply(board_name, refnum):
     if get_current_user(request).banned: return redirect("/ban_info")
 
     board = Board.get(Board.name == board_name)
-    thread = Post.get((Post.refnum == refnum) & (Post.board == board_name))
+    thread = Post.select().join(Board).where((Post.refnum == refnum) & (Board.name == board_name)).get()
 
     if thread.closed:
         return abort(423, "You cannot reply because this thread is locked.")
@@ -309,12 +311,12 @@ def post_reply(board_name, refnum):
         filename = upload.filename
 
     data = {
-        "board": board.name,
+        "board": board,
         "author": author,
         "refnum": no,
         "is_reply": True,
         "replyrefnum": refnum,
-        "date": datetime.now().strftime("%Y-%m-%d %H:%M"),
+        "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "filename": filename,
         "image": save_path,
         "content": content,
@@ -329,16 +331,21 @@ def post_reply(board_name, refnum):
         if word[:2] == ">>":
             ref = word[2:]
             if ref.rstrip().isdigit():
-                ref = ref
-                thread_ref = Post.get(Post.refnum == ref)
-                replylist = loads(thread_ref.replylist)
-                if no not in replylist:
-                    replylist.append(no)
-                    Post.update(replylist = dumps(replylist)).where((Post.board == board.name) & (Post.refnum == ref)).execute()
+                ref = int(ref)
+                try:
+                    thread_ref = Post.select().join(Board).where((Board.name == board.name) & (Post.refnum == ref)).get()
+                    replylist = loads(thread_ref.replylist)
+                    if no not in replylist:
+                        replylist.append(no)
+                        thread_ref.replylist = dumps(replylist)
+                        thread_ref.save()
+                except: pass
 
-    Post.update(bumped_at = datetime.now().replace(microsecond=0)).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
+    thread.bumped_at = datetime.now().replace(microsecond=0)
+    thread.save()
 
-    Board.update(lastrefnum = no + 1).where(Board.name == board_name).execute()
+    board.lastrefnum += 1
+    board.save()
 
     redirect(f"/{board_name}/")
 
@@ -359,29 +366,31 @@ def delete_thread(board_name):
             report.save()
     else:
         for refnum in form:
-            thread = Post.get((Post.board == board.name) & (Post.refnum == refnum))
+            thread = Post.select().join(Board).where((Board.name == board.name) & (Post.refnum == refnum)).get()
             if (thread.author == current_user.name or
                 f':{board_name}:' in current_user.mod):
 
-                # Remove from replylist
                 for word in thread.content.split():
                     if word[:2] == ">>":
                         ref = word[2:]
                         if ref.rstrip().isdigit():
                             ref = ref
-                            thread_ref = Post.get((Post.board == board.name) & (Post.refnum == ref))
-                            replylist = loads(thread_ref.replylist)
-                            if thread.refnum in replylist:
-                                replylist.remove(thread.refnum)
-                                Post.update(replylist = replylist).where((Post.board == thread_ref.board) & (Post.refnum == thread_ref.refnum)).execute()
+                            try:
+                                thread_ref = Post.select().join(Board).where((Board.name == board.name) & (Post.refnum == ref)).get()
+                                replylist = loads(thread_ref.replylist)
+                                if thread.refnum in replylist:
+                                    replylist.remove(thread.refnum)
+                                    thread_ref.replylist = dumps(replylist)
+                                    thread_ref.save()
+                            except: pass
 
 
                 if thread.image: remove_media(thread.image)
                 if not thread.is_reply:
-                    for reply in Post.select().where((Post.board == thread.board) & (Post.replyrefnum == thread.refnum)):
+                    for reply in Post.select().join(Board).where((Board.name == thread.board.name) & (Post.replyrefnum == thread.refnum)):
                         if reply.image: remove_media(reply.image)
-                        Post.delete().where((Post.board == thread.board) & (Post.replyrefnum == thread.refnum)).execute()
-                Post.delete().where((Post.board == thread.board) & (Post.refnum == thread.refnum)).execute()
+                        Post.delete().join(Board).where((Board.name == thread.board.name) & (Post.replyrefnum == thread.refnum)).execute()
+                thread.delete_instance()
 
 
     redirect(f"/{board_name}/")
@@ -450,9 +459,15 @@ def del_board(board_name):
     if check_admin(request) == 1:
         return abort(403, "You are not allowed to do this.")
 
-    Anon.update(mod = anon.mod.replace(f':{board_name}:', '')).where(Anon.name == anon.name).execute()
-    Board.delete().where(Board.name == board_name).execute()
-    Post.delete().where(Post.board == board_name).execute()
+    for anon in Anon.select().where(Anon.mod != ""):
+        anon.mod = anon.mod.replace(f':{board_name}:', '')
+        anon.save()
+
+    board = Board.get(Board.name == board_name)
+
+    Post.delete().where(Post.board_id == board.id).execute()
+
+    board.delete_instance()
     board_directory(board_name, remove=True)
 
     return redirect("/admin")
@@ -469,15 +484,14 @@ def mod():
 
     anon = Anon.get(Anon.name == user)
 
-    if bool(opts.get("add")):
-        if f':{board}:' not in anon.mod: anon.mod += ":"+board+":"
-        Anon.update(mod = anon.mod).where(Anon.name == anon.name).execute()
+    if bool(opts.get("add")) and f':{board}:' not in anon.mod:
+        anon.mod += f':{board}:'
 
-    if bool(opts.get("rm")):
-        Anon.update(mod = anon.mod.replace(f':{board}:', '')).where(Anon.name == anon.name).execute()
+    if bool(opts.get("rm")): anon.mod = anon.mod.replace(f':{board}:', '')
 
-    if bool(opts.get("rmall")):
-        Anon.update(mod = "").where(Anon.name == anon.name).execute()
+    if bool(opts.get("rmall")): anon.mod = ""
+
+    anon.save()
 
     return redirect(f"/admin")
 
@@ -496,7 +510,8 @@ def add_mod():
         return abort(404, "User does not exist.")
 
     if f':{board}:' not in anon.mod: anon.mod += ":"+board+":"
-    Anon.update(mod = anon.mod).where(Anon.name == anon.name).execute()
+
+    anon.save()
 
     return redirect(f"/admin")
 
@@ -508,10 +523,13 @@ def thread_pin(board_name, refnum):
 
     board = Board.get(Board.name == board_name)
 
-    thread = Post.get((Post.board == board_name) & (Post.refnum == refnum))
+    thread = Post.select().join(Board).where((Board.name == board_name) &
+            (Post.refnum == refnum)).get()
 
-    if thread.pinned: Post.update(pinned = False).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
-    else: Post.update(pinned = True).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
+    if thread.pinned: thread.pinned = False
+    else: thread.pinned = True
+
+    thread.save()
 
     return redirect(f'/{board_name}/')
 
@@ -523,10 +541,13 @@ def thread_close(board_name, refnum):
 
     board = Board.get(Board.name == board_name)
 
-    thread = Post.get((Post.board == board_name) & (Post.refnum == refnum))
+    thread = Post.select().join(Board).where((Board.name == board_name) &
+            (Post.refnum == refnum)).get()
 
-    if thread.closed: Post.update(closed = False).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
-    else: Post.update(closed = True).where((Post.board == board_name) & (Post.refnum == refnum)).execute()
+    if thread.closed: thread.closed = False
+    else: thread.closed = True
+
+    thread.save()
 
     return redirect(f'/{board_name}/')
 
