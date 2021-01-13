@@ -6,7 +6,11 @@ import shutil
 import filetype
 
 from PIL import Image
+from bottle import ConfigDict
 from string import ascii_lowercase
+
+config = ConfigDict()
+config.load_config('imageboard.conf')
 
 def thumbnail(path, refnum, ext, is_reply=False):
 
@@ -41,11 +45,15 @@ def file_validation(board_name, refnum, upload, is_reply=False):
 
     name, ext = os.path.splitext(upload.filename)
 
-    if ext not in ('.png','.jpg','.jpeg','.mp4', '.webm', '.ogg'):
+    image_ext = ('.png','.jpg','.jpeg')
+
+    if ext not in image_ext and ext not in ('.mp4', '.webm', '.ogg'):
         return 1
 
     save_path = "uploads/%s/%s%s" % (board_name, refnum, ext)
+    
     upload.save(save_path)
+    
 
     mime = filetype.guess(save_path)
 
@@ -53,7 +61,16 @@ def file_validation(board_name, refnum, upload, is_reply=False):
         os.remove(save_path)
         return 1
 
-    if mime.EXTENSION in ('jpg', 'png'): thumbnail(save_path, refnum, ext, is_reply)
+    if mime.EXTENSION in map(lambda ext: ext[1:], image_ext): # remove '.'
+        thumbnail(save_path, refnum, ext, is_reply)
+
+    if ext in image_ext and config["uploads.strip_metadata"]:
+        img = Image.open(save_path)
+        data = list(img.getdata())
+        no_exif = Image.new(img.mode, img.size)
+        no_exif.putdata(data)
+        no_exif.save(save_path)
+
 
     return save_path
 
