@@ -6,7 +6,7 @@ config.load_config('imageboard.conf')
 
 if config['database.engine'] == 'sqlite':
 
-    db = SqliteDatabase('librechan.db')
+    db = SqliteDatabase(f'{config["database.name"]}.db')
 
 elif config['database.engine'] == 'postgresql':
 
@@ -77,3 +77,6 @@ class Report(Model):
 
     class Meta:
         database = db
+
+with db:
+    db.create_tables([Report, Post, Board, Anon])
