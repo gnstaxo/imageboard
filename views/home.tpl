@@ -33,7 +33,7 @@
         % else:
           <a href="/{{thread.board.name}}/thread/{{thread.refnum}}" style="text-decoration:none;">
             % if not is_video(thread.filename):
-              <img src="/uploads/{{thread.board.name}}/{{thread.refnum}}s.jpg">
+              <img src="{{basename}}/uploads/{{thread.board.name}}/{{thread.refnum}}s.jpg">
             % end
           </a>
         % end

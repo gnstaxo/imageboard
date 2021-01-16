@@ -13,7 +13,7 @@
     </tr>
   </thead>
   <tbody>
-  % for report in board.reports:
+  % for report in reports:
     % thread = board.posts.where(Post.refnum == report.refnum).get()
     <tr>
       <td>{{report.refnum}}</td>

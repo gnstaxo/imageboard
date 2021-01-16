@@ -11,11 +11,11 @@
       <a href="/{{board_name}}/thread/{{thread.refnum}}">
         % if  file_ext == "mp4" or file_ext == "webm":
           <video width="250">
-          <source src="/uploads/{{board_name}}/{{thread.refnum}}.{{file_ext}}" type="video/{{file_ext}}">
+          <source src="{{basename}}/uploads/{{board_name}}/{{thread.refnum}}.{{file_ext}}" type="video/{{file_ext}}">
           Your browser does not support the video tag.
           </video>
         % else:
-          <img src="/uploads/{{board_name}}/{{thread.refnum}}s.jpg">
+          <img src="{{basename}}/uploads/{{board_name}}/{{thread.refnum}}s.jpg">
         % end
       </a>
       <h4 class="Card-title Hilo-title">{{thread.title}}</h4>

@@ -36,7 +36,7 @@
       Your browser does not support the video tag.
     </video>
   % else:
-    <img class="Reply-image" src="/uploads/{{board_name}}/{{reply.refnum}}s.jpg">
+    <img class="Reply-image" src="{{basename}}/uploads/{{board_name}}/{{reply.refnum}}s.jpg">
   % end
 	% end
 	<div class="Thread-text">

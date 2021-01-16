@@ -12,7 +12,7 @@
   % end
   </a>
   % if not is_video(thread.filename):
-    [<a href="https://www.google.com/searchbyimage?image_url=http://192.168.1.104/{{thread.image}}"class="gsearch">S</a>]
+    [<a href="https://www.google.com/searchbyimage?image_url={{basename}}/uploads/{{thread.image}}"class="gsearch">S</a>]
   % end
     ({{image_size(thread.image)}})
     </span>
@@ -23,7 +23,7 @@
       Your browser does not support the video tag.
       </video>
     % else:
-      <img class="Thread-image" src="/uploads/{{board_name}}/{{thread.refnum}}s.jpg">
+      <img class="Thread-image" src="{{basename}}/uploads/{{board_name}}/{{thread.refnum}}s.jpg">
     % end
     <div class="Thread-info">
     <input type="checkbox" name="{{thread.refnum}}" value="delete">
@@ -34,10 +34,10 @@
     % end
   {{thread.date}} No. <span class="dopen">{{thread.refnum}}</span>
   % if thread.pinned:
-    <img class="pin" src="/static/img/sticky.gif"></img>
+    <img class="pin" src="{{basename}}/static/img/sticky.gif"></img>
   % end
   % if thread.closed:
-    <img class="pin" src="/static/img/locked.gif"></img>
+    <img class="pin" src="{{basename}}/static/img/locked.gif"></img>
   % end
   % if not is_detail:
     <a class="btn Thread-repbtn" href="/{{board_name}}/thread/{{thread.refnum}}">Reply</a>

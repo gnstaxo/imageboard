@@ -47,7 +47,8 @@ def home():
     number_of_messages = Post.select().count()
     return dict(title=config['app.title'],
             welcome_message=config['app.welcome_message'],
-            show_nsfw=show_nsfw, active_content_size=active_content_size, number_of_messages=number_of_messages)
+            show_nsfw=show_nsfw, active_content_size=active_content_size,
+            number_of_messages=number_of_messages, basename=config['app.basename'])
 
 @get('/<board_name>/')
 @get('/<board_name:re:[a-z0-9]+>')
@@ -73,9 +74,9 @@ def get_board(board_name, page=1):
             threads=threads, board=board, current_page=page,
             is_detail = False, current_user = current_user,
             thread_count=query.count(),
-            max_file_size=config['app.upload_max_size'],
+            max_file_size=config['uploads.upload_max_size'],
             maxlength=config['threads.content_max_length'],
-            per_page=per_page
+            per_page=per_page, basename=config['app.basename']
         )
 
 @get('/ban_info')
@@ -102,8 +103,8 @@ def get_thread(board_name, refnum):
 
     return dict(board_name=board.name, thread=thread, board=board,
             is_detail=True, current_user=get_current_user(request),
-            max_file_size=config['app.upload_max_size'],
-            maxlength=config['threads.content_max_length'])
+            max_file_size=config['uploads.upload_max_size'],
+            maxlength=config['threads.content_max_length'], basename=config['app.basename'])
 
 @get('/<board_name>/catalog')
 @view('catalog')
@@ -138,7 +139,7 @@ def reports(board_name):
 
     return dict(board=board, bans=Anon.select().where(Anon.banned == True),
             current_user=current_user, board_name=board_name,
-            reasons=report_reasons)
+            reasons=report_reasons, reports=board.reports)
 
 @get('/admin')
 @view('admin')
@@ -558,7 +559,7 @@ if __name__ == '__main__':
         run(debug=True, reloader=True, host='127.0.0.1', port=8080)
 
     else:
-        upload_max_size = int(config['app.upload_max_size'])
+        upload_max_size = int(config['uploads.upload_max_size'])
         application = default_app()
         serve(application, listen=config['app.domain']+':'+config['app.port'],
                max_request_body_size=upload_max_size * 1024**2)
