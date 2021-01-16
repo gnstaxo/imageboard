@@ -1,7 +1,4 @@
 % from bottle import ConfigDict
-% config = ConfigDict()
-% config.load_config('imageboard.conf')
-% basename = config['app.basename']
 <!DOCTYPE html>
 <html lang="en">
 <head>

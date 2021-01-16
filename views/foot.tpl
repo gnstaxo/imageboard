@@ -7,5 +7,5 @@
 <div class="footer-contact">
 <a href="mailto:{{config['app.contact']}}">Contact</a>
 |
-<a href="/">{{config['app.domain']}}</a> &copy; 2020
+<a href="/">{{config['app.host']}}</a> &copy; 2020
 </div>

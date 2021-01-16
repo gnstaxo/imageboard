@@ -12,6 +12,8 @@ from datetime import datetime
 config = ConfigDict()
 config.load_config('imageboard.conf')
 
+basename = config['app.basename'] if config['app.reverse_proxy'] == 'True' else ''
+
 @get('/static/<filename:path>')
 def send_static(filename):
     return static_file(filename, root='static')
@@ -48,7 +50,7 @@ def home():
     return dict(title=config['app.title'],
             welcome_message=config['app.welcome_message'],
             show_nsfw=show_nsfw, active_content_size=active_content_size,
-            number_of_messages=number_of_messages, basename=config['app.basename'])
+            number_of_messages=number_of_messages, basename=basename)
 
 @get('/<board_name>/')
 @get('/<board_name:re:[a-z0-9]+>')
@@ -76,7 +78,7 @@ def get_board(board_name, page=1):
             thread_count=query.count(),
             max_file_size=config['uploads.upload_max_size'],
             maxlength=config['threads.content_max_length'],
-            per_page=per_page, basename=config['app.basename']
+            per_page=per_page, basename=basename
         )
 
 @get('/ban_info')
@@ -104,7 +106,7 @@ def get_thread(board_name, refnum):
     return dict(board_name=board.name, thread=thread, board=board,
             is_detail=True, current_user=get_current_user(request),
             max_file_size=config['uploads.upload_max_size'],
-            maxlength=config['threads.content_max_length'], basename=config['app.basename'])
+            maxlength=config['threads.content_max_length'], basename=basename)
 
 @get('/<board_name>/catalog')
 @view('catalog')
@@ -554,12 +556,10 @@ if __name__ == '__main__':
 
     if not path.isdir('uploads'): board_directory('uploads')
 
-    if config['app.production'] == 'False':
-
-        run(debug=True, reloader=True, host='127.0.0.1', port=8080)
-
-    else:
+    if config['app.production'] == 'True':
         upload_max_size = int(config['uploads.upload_max_size'])
         application = default_app()
-        serve(application, listen=config['app.domain']+':'+config['app.port'],
+        serve(application, listen=config['app.host']+':'+config['app.port'],
                max_request_body_size=upload_max_size * 1024**2)
+    else:
+        run(debug=True, reloader=True, host=config['app.host'], port=config['app.port'])

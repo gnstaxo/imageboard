@@ -64,7 +64,7 @@ def file_validation(board_name, refnum, upload, is_reply=False):
     if mime.EXTENSION in map(lambda ext: ext[1:], image_ext): # remove '.'
         thumbnail(save_path, refnum, ext, is_reply)
 
-    if ext in image_ext and config["uploads.strip_metadata"]:
+    if ext in image_ext and config["uploads.strip_metadata"] == 'True':
         img = Image.open(save_path)
         data = list(img.getdata())
         no_exif = Image.new(img.mode, img.size)
