@@ -17,18 +17,26 @@
 - waitress: Production server.
 - peewee: SQL ORM.
 
-## Usage
-First, get the dependencies:
+## Guide
+1. Clone the repository and access the folder:
+
+`$ git clone https://github.com/gnstaxo/imageboard.git`
+
+`$ cd imageboard`
+
+2. Get the dependencies
 
 `$ pip install -r requirements.txt`
 
-Then you can run the app:
+3. Rename or copy the default configuration file, modify it to your liking
+
+`$ cp default.conf imageboard.conf`
+
+4. Run the app
 
 `$ python backend.py`
 
-To change stuff edit `imageboard.conf`
-
-Admin dashboard is at /admin for which you'll first have to go through /login.
+Admin dashboard is at `/admin` for which you'll first have to go through `/login`.
 
 ## Notes
 - The function to limit the size of uploads only works in production mode.
