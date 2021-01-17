@@ -39,5 +39,5 @@
 Admin dashboard is at `/admin` for which you'll first have to go through `/login`.
 
 ## Notes
-- The function to limit the size of uploads only works in production mode.
+- The function to limit the size of uploads and reverse proxy only work in production mode.
 - To use a MySQL database install pymysql, and psycopg2 for Postgresql.
