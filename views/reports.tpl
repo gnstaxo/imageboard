@@ -26,16 +26,16 @@
       <td>{{report.reason}}</td>
       <td>{{report.date}}</td>
       % if thread.is_reply:
-        <td style="text-align: center;">[<a href="/{{board.name}}/thread/{{thread.replyrefnum}}#{{report.refnum}}">View</a>]</td>
+        <td style="text-align: center;">[<a href="{{basename}}/{{board.name}}/thread/{{thread.replyrefnum}}#{{report.refnum}}">View</a>]</td>
       % else:
-        <td style="text-align: center;">[<a href="/{{board.name}}/thread/{{report.refnum}}">View</a>]
+        <td style="text-align: center;">[<a href="{{basename}}/{{board.name}}/thread/{{report.refnum}}">View</a>]
       % end
     </tr>
   % end
   </tbody>
 </table>
 <h3 class="Title">Bans</h3>
-<form class="Ban-form" action="/{{board_name}}/ban" method="POST">
+<form class="Ban-form" action="{{basename}}/{{board_name}}/ban" method="POST">
   <input name="user" type="text" placeholder="user">
   <select name="reason">
     <option selected disabled>Reason:</option>
@@ -63,7 +63,7 @@
       	<td>{{ban.ban_reason}}</td>
       	<td>{{ban.ban_date}}</td>
         <td>
-          <form action="/{{board_name}}/unban/{{ban.name}}" method="POST">
+          <form action="{{basename}}/{{board_name}}/unban/{{ban.name}}" method="POST">
             <input type="submit" name="dall" value="Delete all posts">
             <input type="submit" name="unban" value="Unban">
           </form>

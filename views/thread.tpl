@@ -19,7 +19,7 @@
     </div>
     % if is_video(thread.filename):
       <video width="250" height="250" class="Thread-video">
-      <source src="/{{thread.image}}" type="video/{{thread.image[-3:]}}">
+      <source src="{{basename}}/{{thread.image}}" type="video/{{thread.image[-3:]}}">
       Your browser does not support the video tag.
       </video>
     % else:
@@ -40,14 +40,14 @@
     <img class="pin" src="{{basename}}/static/img/locked.gif"></img>
   % end
   % if not is_detail:
-    <a class="btn Thread-repbtn" href="/{{board_name}}/thread/{{thread.refnum}}">Reply</a>
+    <a class="btn Thread-repbtn" href="{{basename}}/{{board_name}}/thread/{{thread.refnum}}">Reply</a>
   % end
   % if f':{board_name}:' in current_user.mod:
     <div class="dropdown">
       <button class="dropbtn">▶</button>
       <div class="myDropdown dropdown-content">
-        <a class="dropin" href="/{{board_name}}/thread/{{thread.refnum}}/pin">Pin</a>
-        <a class="dropc" href="/{{board_name}}/thread/{{thread.refnum}}/close">Close</a>
+        <a class="dropin" href="{{basename}}/{{board_name}}/thread/{{thread.refnum}}/pin">Pin</a>
+        <a class="dropc" href="{{basename}}/{{board_name}}/thread/{{thread.refnum}}/close">Close</a>
       </div>
     </div> 
   % end

@@ -13,7 +13,7 @@
       No boards have been created.
     % end
     % for board in Board.select():
-      <a href="/{{board.name}}/" style="display:inline-block;">/{{board.name}}/ - {{board.title}}</a>
+      <a href="{{basename}}/{{board.name}}/" style="display:inline-block;">/{{board.name}}/ - {{board.title}}</a>
     % end
   </div>
 </div>
@@ -26,12 +26,12 @@
     % else:
       % for thread in images_to_show:
         % if thread.is_reply:
-            <a href="/{{thread.board.name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">
+            <a href="{{basename}}/{{thread.board.name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">
             % if not is_video(thread.filename):
-              <img src="/{{thread.image[:-4]}}s.jpg"></a>
+              <img src="{{basename}}/{{thread.image[:-4]}}s.jpg"></a>
             % end
         % else:
-          <a href="/{{thread.board.name}}/thread/{{thread.refnum}}" style="text-decoration:none;">
+          <a href="{{basename}}/{{thread.board.name}}/thread/{{thread.refnum}}" style="text-decoration:none;">
             % if not is_video(thread.filename):
               <img src="{{basename}}/uploads/{{thread.board.name}}/{{thread.refnum}}s.jpg">
             % end
@@ -51,9 +51,9 @@
         % for thread in messages_to_show:
           <li>
             % if thread.is_reply:
-              <a href="/{{thread.board.name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">>>/{{thread.board.name}}/{{thread.replyrefnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
+              <a href="{{basename}}/{{thread.board.name}}/thread/{{thread.replyrefnum}}#{{thread.refnum}}">>>/{{thread.board.name}}/{{thread.replyrefnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
             % else:
-              <a href="/{{thread.board.name}}/thread/{{thread.refnum}}">>>/{{thread.board.name}}/{{thread.refnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
+              <a href="{{basename}}/{{thread.board.name}}/thread/{{thread.refnum}}">>>/{{thread.board.name}}/{{thread.refnum}}</a><span class="Card-text">{{short_msg(thread.short_content)}}</span>
             % end
           </li>
         % end

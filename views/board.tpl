@@ -5,7 +5,7 @@
  % end
 </h2>
 <hr>
-<form class="Formulario" method="POST" action="/{{board_name}}/" enctype="multipart/form-data">
+<form class="Formulario" method="POST" action="{{basename}}/{{board_name}}/" enctype="multipart/form-data">
   <table>
     <tbody>
       <tr>
@@ -27,7 +27,7 @@
 </form>
 
 <div id="container">
-<form action="/{{board_name}}/delete" method="POST">
+<form action="{{basename}}/{{board_name}}/delete" method="POST">
 % for thread in threads:
 % include('thread', thread=thread, board_name=board_name, board=board)
 % end

@@ -1,7 +1,7 @@
 % rebase('base', title="Administration")
 % from models import Board
 <h3 class="Title">Mods</h3>
-<form class="Ban-form" action="/new_mod" method="POST">
+<form class="Ban-form" action="{{basename}}/new_mod" method="POST">
 	<input name="user" type="text" placeholder="user">
   <select name="board">
     % for board in Board.select():
@@ -27,7 +27,7 @@
       	<td>{{mod.name}}</td>
       	<td>{{mod.mod.replace("::", ", ").strip(':')}}</td>
         <td>
-          <form action="/mod" method="POST">
+          <form action="{{basename}}/mod" method="POST">
             <select name="board">
               % for board in Board.select():
               <option value="{{board.name}}">{{board.name}}</option>
@@ -46,7 +46,7 @@
   </tbody>
 </table>
 <h3 class="Title">Boards</h3>
-<form class="Ban-form" action="/add_board" method="POST">
+<form class="Ban-form" action="{{basename}}/add_board" method="POST">
 	<input name="name" type="text" placeholder="board name" required>
 	<input name="title" type="text" placeholder="board title" required>
 	NSFW: <input name="nsfw" type="checkbox" placeholder="board title">
@@ -66,7 +66,7 @@
         <td>{{board.name}}</td>
         <td>{{board.title}}</td>
         <td>
-          <form action="/del_board/{{board.name}}" method="POST">	
+          <form action="{{basename}}/del_board/{{board.name}}" method="POST">	
             <input type="submit" value="Delete"></input>
           </form>
         </td>
@@ -74,6 +74,6 @@
     % end
   </tbody>
 </table>
-<form action="/logout" method="POST" style="text-align: center;margin-top:10px;">
+<form action="{{basename}}/logout" method="POST" style="text-align: center;margin-top:10px;">
   <input type="submit" value="Log out">
 </form>

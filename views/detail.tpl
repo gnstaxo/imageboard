@@ -2,7 +2,7 @@
 % from utils import image_size
 <h3 class="Title">{{thread.title}}</h3>
 <hr>
-<form class="Formulario" method="POST" action="/{{board_name}}/thread/{{thread.refnum}}" enctype="multipart/form-data">
+<form class="Formulario" method="POST" action="{{basename}}/{{board_name}}/thread/{{thread.refnum}}" enctype="multipart/form-data">
   <table>
     <tbody>
       <tr>
@@ -17,7 +17,7 @@
   </table>
 </form>
 <div id="container">
-<form action="/{{board_name}}/delete" method="POST">
+<form action="{{basename}}/{{board_name}}/delete" method="POST">
 	<div style="clear:both;"></div>
 	% include('thread', thread=thread)	
 </div>

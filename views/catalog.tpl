@@ -8,7 +8,7 @@
   % file_ext = thread.filename.split(".")[1]
 		<li class="Card-item">
 		<div class="Card">
-      <a href="/{{board_name}}/thread/{{thread.refnum}}">
+      <a href="{{basename}}/{{board_name}}/thread/{{thread.refnum}}">
         % if  file_ext == "mp4" or file_ext == "webm":
           <video width="250">
           <source src="{{basename}}/uploads/{{board_name}}/{{thread.refnum}}.{{file_ext}}" type="video/{{file_ext}}">
