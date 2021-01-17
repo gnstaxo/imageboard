@@ -159,9 +159,9 @@ def admin_panel():
 
     if bool(logged_cookie):
 
-        if logged_cookie != config['admin.token']: return redirect("{basename}/")
+        if logged_cookie != config['admin.token']: return redirect(f"{basename}/")
 
-    else: return redirect("{basename}/")
+    else: return redirect(f"{basename}/")
 
     return dict(boards=Board.select(), current_user=current_user,
             board_name=None, mods=Anon.select().where(Anon.mod != ""),
@@ -461,7 +461,7 @@ def add_board():
     board.save()
     board_directory(name)
 
-    return redirect("{basename}/admin")
+    return redirect(f"{basename}/admin")
 
 @post(f'{basename}/del_board/<board_name>')
 def del_board(board_name):
@@ -480,7 +480,7 @@ def del_board(board_name):
     board.delete_instance()
     board_directory(board_name, remove=True)
 
-    return redirect("{basename}/admin")
+    return redirect(f"{basename}/admin")
 
 @post(f'{basename}/mod')
 def mod():
