@@ -12,7 +12,11 @@ from datetime import datetime
 config = ConfigDict()
 config.load_config('imageboard.conf')
 
-basename = config['app.basename'] if config['app.reverse_proxy'] == 'True' else ''
+if config['app.reverse_proxy'] == 'True':
+    basename = config['app.basename']
+else:
+    http = 'https' if config['app.use_ssl'] == 'True' else 'http'
+    basename = f"{http}://{config['app.host']}:{config['app.port']}"
 
 @get('/static/<filename:path>')
 def send_static(filename):
@@ -87,7 +91,7 @@ def ban_info():
 
     current_user = get_current_user(request)
 
-    return dict(current_user=current_user)
+    return dict(current_user=current_user, basename=basename)
 
 @get('/<board_name>/thread/<refnum:int>')
 @view('detail')
@@ -121,7 +125,7 @@ def catalog(board_name):
 
     return dict(threads=query, board_name=board.name,
             board_title=board.title, board=board,
-            current_user=get_current_user(request))
+            current_user=get_current_user(request), basename=basename)
 
 @get('/<board_name>/mod')
 @view('reports')
@@ -141,7 +145,7 @@ def reports(board_name):
 
     return dict(board=board, bans=Anon.select().where(Anon.banned == True),
             current_user=current_user, board_name=board_name,
-            reasons=report_reasons, reports=board.reports)
+            reasons=report_reasons, reports=board.reports, basename=basename)
 
 @get('/admin')
 @view('admin')
@@ -158,7 +162,8 @@ def admin_panel():
     else: return redirect("/")
 
     return dict(boards=Board.select(), current_user=current_user,
-            board_name=None, mods=Anon.select().where(Anon.mod != ""))
+            board_name=None, mods=Anon.select().where(Anon.mod != ""),
+            basename=basename)
 
 @get('/login')
 @view('login')
@@ -166,7 +171,7 @@ def login():
 
     current_user = get_current_user(request)
 
-    return dict(current_user=current_user)
+    return dict(current_user=current_user, basename=basename)
 
 
 @post('/login')
@@ -208,7 +213,8 @@ def post_thread(board_name):
 
     author = current_user
     refnum = board.lastrefnum
-    save_path = file_validation(board_name, refnum, upload)
+    save_path = file_validation(board_name, refnum, upload,
+        (config['uploads.strip_metadata'] == 'True'))
 
     if len(content.split('\n')) < 10:
         short_content = ' '.join(content.split(' ')[:200])
@@ -301,7 +307,8 @@ def post_reply(board_name, refnum):
 
     if upload is not None:
 
-        save_path = file_validation(board_name, no, upload, True)
+        save_path = file_validation(board_name, no, upload,
+                    (config['uploads.strip_metadata'] == 'True'), is_reply=True)
         if save_path == 1: return redirect(f"/{board_name}/thread/{refnum}")
         filename = upload.filename
 

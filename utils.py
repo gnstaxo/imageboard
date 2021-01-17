@@ -4,13 +4,8 @@ import random
 import hashlib
 import shutil
 import filetype
-
-from PIL import Image
-from bottle import ConfigDict
 from string import ascii_lowercase
-
-config = ConfigDict()
-config.load_config('imageboard.conf')
+from PIL import Image
 
 def thumbnail(path, refnum, ext, is_reply=False):
 
@@ -41,7 +36,7 @@ def thumbnail(path, refnum, ext, is_reply=False):
         else:
             im.save(save_path)
 
-def file_validation(board_name, refnum, upload, is_reply=False): 
+def file_validation(board_name, refnum, upload, strip_metadata, is_reply=False): 
 
     name, ext = os.path.splitext(upload.filename)
 
@@ -53,7 +48,6 @@ def file_validation(board_name, refnum, upload, is_reply=False):
     save_path = "uploads/%s/%s%s" % (board_name, refnum, ext)
     
     upload.save(save_path)
-    
 
     mime = filetype.guess(save_path)
 
@@ -64,7 +58,7 @@ def file_validation(board_name, refnum, upload, is_reply=False):
     if mime.EXTENSION in map(lambda ext: ext[1:], image_ext): # remove '.'
         thumbnail(save_path, refnum, ext, is_reply)
 
-    if ext in image_ext and config["uploads.strip_metadata"] == 'True':
+    if ext in image_ext and strip_metadata:
         img = Image.open(save_path)
         data = list(img.getdata())
         no_exif = Image.new(img.mode, img.size)

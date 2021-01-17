@@ -4,7 +4,7 @@
   <div class="Thread-meta">
   [<span class="hide-thread" title="Hide thread">=</span>]
   <span class="image-data">File:
-  <a href="/{{thread.image}}" title="{{thread.filename}}">
+  <a href="{{basename}}/{{thread.image}}" title="{{thread.filename}}">
   % if len(thread.filename.split(".")[0]) > 20:
     {{thread.filename[:20]}}(...).{{thread.filename.split(".")[-1]}}
   % else:
