@@ -1,6 +1,13 @@
 from peewee import *
 from bottle import ConfigDict
 
+try:
+    with open('imageboard.conf') as f:
+        pass
+except FileNotFoundError:
+    print("Config file not found.")
+    exit()
+
 config = ConfigDict()
 config.load_config('imageboard.conf')
 

@@ -20,11 +20,11 @@ else:
 
 if basename[-1] == '/': basename = basename[:-1] # remove trailing slash
 
-@get(f'{basename}/static/<filename:path>')
+@get(f'/static/<filename:path>')
 def send_static(filename):
     return static_file(filename, root='static')
 
-@get(f'{basename}/uploads/<filename:path>')
+@get(f'/uploads/<filename:path>')
 def send_upload(filename):
     return static_file(filename, root='uploads')
 
@@ -47,7 +47,7 @@ def check_admin(req):
         if logged_cookie != config['admin.token']: return 1
     else: return 1
 
-@get(f'{basename}/')
+@get(f'/')
 @view('home')
 def home():
     show_nsfw = ('True' == config['threads.show_nsfw'])
@@ -58,9 +58,9 @@ def home():
             show_nsfw=show_nsfw, active_content_size=active_content_size,
             number_of_messages=number_of_messages, basename=basename)
 
-@get(f'{basename}/<board_name>/')
-@get(f'{basename}/<board_name:re:[a-z0-9]+>')
-@get(f'{basename}/<board_name>/<page:int>')
+@get(f'/<board_name>/')
+@get(f'/<board_name:re:[a-z0-9]+>')
+@get(f'/<board_name>/<page:int>')
 @view('board')
 def get_board(board_name, page=1):
 
@@ -87,7 +87,7 @@ def get_board(board_name, page=1):
             per_page=per_page, basename=basename
         )
 
-@get(f'{basename}/ban_info')
+@get(f'/ban_info')
 @view('ban')
 def ban_info():
 
@@ -95,7 +95,7 @@ def ban_info():
 
     return dict(current_user=current_user, basename=basename)
 
-@get(f'{basename}/<board_name>/thread/<refnum:int>')
+@get(f'/<board_name>/thread/<refnum:int>')
 @view('detail')
 def get_thread(board_name, refnum):
 
@@ -114,7 +114,7 @@ def get_thread(board_name, refnum):
             max_file_size=config['uploads.upload_max_size'],
             maxlength=config['threads.content_max_length'], basename=basename)
 
-@get(f'{basename}/<board_name>/catalog')
+@get(f'/<board_name>/catalog')
 @view('catalog')
 def catalog(board_name):
 
@@ -129,7 +129,7 @@ def catalog(board_name):
             board_title=board.title, board=board,
             current_user=get_current_user(request), basename=basename)
 
-@get(f'{basename}/<board_name>/mod')
+@get(f'/<board_name>/mod')
 @view('reports')
 def reports(board_name):
 
@@ -149,7 +149,7 @@ def reports(board_name):
             current_user=current_user, board_name=board_name,
             reasons=report_reasons, reports=board.reports, basename=basename)
 
-@get(f'{basename}/admin')
+@get(f'/admin')
 @view('admin')
 def admin_panel():
 
@@ -167,7 +167,7 @@ def admin_panel():
             board_name=None, mods=Anon.select().where(Anon.mod != ""),
             basename=basename)
 
-@get(f'{basename}/login')
+@get(f'/login')
 @view('login')
 def login():
 
@@ -176,7 +176,7 @@ def login():
     return dict(current_user=current_user, basename=basename)
 
 
-@post(f'{basename}/login')
+@post(f'/login')
 def do_login():
 
     password = request.forms.get("password")
@@ -189,14 +189,14 @@ def do_login():
 
     return redirect(f"{basename}/login")
 
-@post(f'{basename}/logout')
+@post(f'/logout')
 def do_logout():
 
     response.delete_cookie('logged')
 
     return redirect(f"{basename}/")
 
-@post(f'{basename}/<board_name>/')
+@post(f'/<board_name>/')
 def post_thread(board_name):
 
     current_user = get_current_user(request)
@@ -262,6 +262,7 @@ def post_thread(board_name):
 
             thread.delete_instance()
             remove_media(thread.image)
+            remove_textual_refs(board, thread)
 
             for reply in board.posts.where(Post.replyrefnum == thread.refnum):
 
@@ -270,7 +271,7 @@ def post_thread(board_name):
 
     redirect(f"{basename}/{board_name}/")
 
-@post(f'{basename}/<board_name>/thread/<refnum:int>')
+@post(f'/<board_name>/thread/<refnum:int>')
 def post_reply(board_name, refnum):
 
     current_user = get_current_user(request)
@@ -284,7 +285,7 @@ def post_reply(board_name, refnum):
 
     content = request.forms.get('content')
 
-    if not bool(content): return redirect(f'{basename}/{board_name}/')
+    if not bool(content): return redirect(f'/{board_name}/')
 
     if len(content) > int(config['threads.content_max_length']):
             return abort(400, "The content exeeds the maximum length.")
@@ -353,7 +354,19 @@ def post_reply(board_name, refnum):
 
     redirect(f"{basename}/{board_name}/")
 
-@post(f'{basename}/<board_name>/delete')
+def remove_textual_refs(board, thread):
+    for word in thread.content.split():
+        if word[:2] == ">>":
+            ref = word[2:]
+            if ref.rstrip().isdigit():
+                thread_ref = board.posts.where(Post.refnum == ref).get()
+                replylist = loads(thread_ref.replylist)
+                if thread.refnum in replylist:
+                    replylist.remove(thread.refnum)
+                    thread_ref.replylist = dumps(replylist)
+                    thread_ref.save()
+
+@post(f'/<board_name>/delete')
 def delete_post(board_name):
 
     current_user = get_current_user(request)
@@ -364,29 +377,19 @@ def delete_post(board_name):
     if bool(form.get('report')):
         reason = form.get('report')
         report_reasons = loads(config['reports.reasons'])
-        if reason not in report_reasons: return redirect(f'{basename}/{board_name}/')
+        if reason not in report_reasons:
+            return redirect(f'/{board_name}/')
         for refnum in list(form)[:-1]:
-            report = Report(reason=reason, refnum=refnum, board=board, date=datetime.now().replace(microsecond=0))
+            report = Report(reason=reason, refnum=refnum, board=board,
+                date=datetime.now().replace(microsecond=0))
             report.save()
     else:
         for refnum in form:
             thread = board.posts.where(Post.refnum == refnum).get()
             if (thread.author == current_user or
                 f':{board_name}:' in current_user.mod):
-
-                for word in thread.content.split():
-                    if word[:2] == ">>":
-                        ref = word[2:]
-                        if ref.rstrip().isdigit():
-                            ref = ref
-                            try:
-                                thread_ref = board.posts.where(Post.refnum == ref).get()
-                                replylist = loads(thread_ref.replylist)
-                                if thread.refnum in replylist:
-                                    replylist.remove(thread.refnum)
-                                    thread_ref.replylist = dumps(replylist)
-                                    thread_ref.save()
-                            except: pass
+                
+                remove_textual_refs(board, thread)
 
                 if thread.image: remove_media(thread.image)
 
@@ -403,7 +406,7 @@ def delete_post(board_name):
 
     redirect(f"{basename}/{board_name}/")
 
-@post(f'{basename}/<board_name>/ban')
+@post(f'/<board_name>/ban')
 def ban(board_name):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -419,7 +422,7 @@ def ban(board_name):
 
     return redirect(f"{basename}/{board_name}/mod")
 
-@post(f'{basename}/<board_name>/unban/<name>')
+@post(f'/<board_name>/unban/<name>')
 def unban(board_name, name):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -437,7 +440,7 @@ def unban(board_name, name):
 
     return redirect(f"{basename}/{board_name}/mod")
 
-@post(f'{basename}/add_board')
+@post(f'/add_board')
 def add_board():
 
     if check_admin(request) == 1:
@@ -463,7 +466,7 @@ def add_board():
 
     return redirect(f"{basename}/admin")
 
-@post(f'{basename}/del_board/<board_name>')
+@post(f'/del_board/<board_name>')
 def del_board(board_name):
 
     if check_admin(request) == 1:
@@ -482,7 +485,7 @@ def del_board(board_name):
 
     return redirect(f"{basename}/admin")
 
-@post(f'{basename}/mod')
+@post(f'/mod')
 def mod():
 
     if check_admin(request) == 1:
@@ -505,7 +508,7 @@ def mod():
 
     return redirect(f"{basename}/admin")
 
-@post(f'{basename}/new_mod')
+@post(f'/new_mod')
 def add_mod():
 
     if check_admin(request) == 1:
@@ -525,7 +528,7 @@ def add_mod():
 
     return redirect(f"{basename}/admin")
 
-@get(f'{basename}/<board_name>/thread/<refnum:int>/pin')
+@get(f'/<board_name>/thread/<refnum:int>/pin')
 def thread_pin(board_name, refnum):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -540,9 +543,9 @@ def thread_pin(board_name, refnum):
 
     thread.save()
 
-    return redirect(f'{basename}/{board_name}/')
+    return redirect(f'/{board_name}/')
 
-@get(f'{basename}/<board_name>/thread/<refnum:int>/close')
+@get(f'/<board_name>/thread/<refnum:int>/close')
 def thread_close(board_name, refnum):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -557,7 +560,7 @@ def thread_close(board_name, refnum):
 
     thread.save()
 
-    return redirect(f'{basename}/{board_name}/')
+    return redirect(f'/{board_name}/')
 
 if __name__ == '__main__':
 

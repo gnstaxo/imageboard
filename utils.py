@@ -115,10 +115,6 @@ def get_directory_size(directory):
         return 0
     return total
 
-######################
-# Front-end utilities#
-######################
-
 def author_color(author):
     return '#' + hashlib.blake2b(author.encode()).hexdigest()[:6]
 
