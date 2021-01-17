@@ -80,7 +80,7 @@ def random_name(): return ''.join(random.choices(ascii_lowercase, k=8))
 
 def board_directory(name, remove=False):
     if remove: shutil.rmtree("uploads/%s" % name)
-    else: os.makedirs("uploads/%s" % name)
+    else: os.makedirs("uploads/%s" % name, exist_ok=True)
 
 def get_size_format(b, factor=1024, suffix="B"):
     """

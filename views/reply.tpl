@@ -12,11 +12,11 @@
 	    % if Post.get(Post.refnum == reply.replyrefnum).author.name == reply.author.name:
 		    <span class="op">OP</span>
 	    % end
-	{{reply.date}} <a style="color:black;" href="/{{board_name}}/thread/{{reply.replyrefnum}}#{{reply.refnum}}">No.</a> <span class="dopen">{{reply.refnum}}</span>
+	{{reply.date}} <a style="color:black;" href="{{basename}}/{{board_name}}/thread/{{reply.replyrefnum}}#{{reply.refnum}}">No.</a> <span class="dopen">{{reply.refnum}}</span>
   [<span class="hide-reply" title="Hide reply">=</span>]
 	% if reply.image:
 	<div class="Reply-meta">File:
-		<a href="/{{reply.image}}" title="{{reply.filename}}">
+		<a href="{{basename}}/{{reply.image}}" title="{{reply.filename}}">
 		% if len(reply.filename.split(".")[0]) > 20:
 		{{reply.filename[:20]}}(...).{{reply.filename.split(".")[-1]}}
 		% else:
@@ -24,7 +24,7 @@
 		% end
 		</a>
     % if not is_video(reply.filename):
-      [<a href="https://www.google.com/searchbyimage?image_url=http://192.168.1.104/{{reply.image}}"class="gsearch">S</a>]
+      [<a href="{{basename}}https://www.google.com/searchbyimage?image_url=http://192.168.1.104/{{reply.image}}"class="gsearch">S</a>]
     % end
     % if not is_video(reply.filename):
       ({{image_size(reply.image)}})
@@ -32,7 +32,7 @@
 	</div>
   % if is_video(reply.filename):
     <video class="Reply-video" width="250" height="250">
-      <source src="/{{reply.image}}" type="video/{{reply.image[-3:]}}">
+      <source src="{{basename}}/{{reply.image}}" type="video/{{reply.image[-3:]}}">
       Your browser does not support the video tag.
     </video>
   % else:
@@ -48,7 +48,7 @@
     <div class="Reply-list">
       <span class="reps">Replies:</span>
       % for i in range(len(replylist)):
-        <a href="/{{board_name}}/thread/{{reply.replyrefnum}}#{{replylist[i]}}" class="reps reference">>>{{replylist[i]}}</a>
+        <a href="{{basename}}/{{board_name}}/thread/{{reply.replyrefnum}}#{{replylist[i]}}" class="reps reference">>>{{replylist[i]}}</a>
       % end
     </div>
   % end

@@ -18,11 +18,13 @@ else:
     http = 'https' if config['app.use_ssl'] == 'True' else 'http'
     basename = f"{http}://{config['app.host']}:{config['app.port']}"
 
-@get('/static/<filename:path>')
+if basename[-1] == '/': basename = basename[:-1] # remove trailing slash
+
+@get(f'{basename}/static/<filename:path>')
 def send_static(filename):
     return static_file(filename, root='static')
 
-@get('/uploads/<filename:path>')
+@get(f'{basename}/uploads/<filename:path>')
 def send_upload(filename):
     return static_file(filename, root='uploads')
 
@@ -45,7 +47,7 @@ def check_admin(req):
         if logged_cookie != config['admin.token']: return 1
     else: return 1
 
-@get('/')
+@get(f'{basename}/')
 @view('home')
 def home():
     show_nsfw = ('True' == config['threads.show_nsfw'])
@@ -56,9 +58,9 @@ def home():
             show_nsfw=show_nsfw, active_content_size=active_content_size,
             number_of_messages=number_of_messages, basename=basename)
 
-@get('/<board_name>/')
-@get('/<board_name:re:[a-z0-9]+>')
-@get('/<board_name>/<page:int>')
+@get(f'{basename}/<board_name>/')
+@get(f'{basename}/<board_name:re:[a-z0-9]+>')
+@get(f'{basename}/<board_name>/<page:int>')
 @view('board')
 def get_board(board_name, page=1):
 
@@ -85,7 +87,7 @@ def get_board(board_name, page=1):
             per_page=per_page, basename=basename
         )
 
-@get('/ban_info')
+@get(f'{basename}/ban_info')
 @view('ban')
 def ban_info():
 
@@ -93,7 +95,7 @@ def ban_info():
 
     return dict(current_user=current_user, basename=basename)
 
-@get('/<board_name>/thread/<refnum:int>')
+@get(f'{basename}/<board_name>/thread/<refnum:int>')
 @view('detail')
 def get_thread(board_name, refnum):
 
@@ -112,7 +114,7 @@ def get_thread(board_name, refnum):
             max_file_size=config['uploads.upload_max_size'],
             maxlength=config['threads.content_max_length'], basename=basename)
 
-@get('/<board_name>/catalog')
+@get(f'{basename}/<board_name>/catalog')
 @view('catalog')
 def catalog(board_name):
 
@@ -127,7 +129,7 @@ def catalog(board_name):
             board_title=board.title, board=board,
             current_user=get_current_user(request), basename=basename)
 
-@get('/<board_name>/mod')
+@get(f'{basename}/<board_name>/mod')
 @view('reports')
 def reports(board_name):
 
@@ -139,7 +141,7 @@ def reports(board_name):
     current_user = get_current_user(request)
     
     if f':{board_name}:' not in current_user.mod:
-        return redirect(f"/{board_name}/")
+        return redirect(f"{basename}/{board_name}/")
 
     report_reasons = loads(config['reports.reasons'])
 
@@ -147,7 +149,7 @@ def reports(board_name):
             current_user=current_user, board_name=board_name,
             reasons=report_reasons, reports=board.reports, basename=basename)
 
-@get('/admin')
+@get(f'{basename}/admin')
 @view('admin')
 def admin_panel():
 
@@ -157,15 +159,15 @@ def admin_panel():
 
     if bool(logged_cookie):
 
-        if logged_cookie != config['admin.token']: return redirect("/")
+        if logged_cookie != config['admin.token']: return redirect(f"{basename}/")
 
-    else: return redirect("/")
+    else: return redirect(f"{basename}/")
 
     return dict(boards=Board.select(), current_user=current_user,
             board_name=None, mods=Anon.select().where(Anon.mod != ""),
             basename=basename)
 
-@get('/login')
+@get(f'{basename}/login')
 @view('login')
 def login():
 
@@ -174,7 +176,7 @@ def login():
     return dict(current_user=current_user, basename=basename)
 
 
-@post('/login')
+@post(f'{basename}/login')
 def do_login():
 
     password = request.forms.get("password")
@@ -183,22 +185,22 @@ def do_login():
 
         response.set_cookie("logged", config['admin.token'])
 
-        return redirect("/admin")
+        return redirect(f"{basename}/admin")
 
-    return redirect("/login")
+    return redirect(f"{basename}/login")
 
-@post('/logout')
+@post(f'{basename}/logout')
 def do_logout():
 
     response.delete_cookie('logged')
 
-    return redirect("/")
+    return redirect(f"{basename}/")
 
-@post('/<board_name>/')
+@post(f'{basename}/<board_name>/')
 def post_thread(board_name):
 
     current_user = get_current_user(request)
-    if get_current_user(request).banned: return redirect("/ban_info")
+    if get_current_user(request).banned: return redirect(f"{basename}/ban_info")
 
     board = Board.get(Board.name == board_name)
 
@@ -224,7 +226,7 @@ def post_thread(board_name):
         else:
             short_content = '\n'.join(content.split('\n')[:10])
 
-    if save_path == 1: return redirect(f"/{board_name}/")
+    if save_path == 1: return redirect(f"{basename}/{board_name}/")
 
     by_mod = (f':{board_name}:' in current_user.mod)
 
@@ -266,13 +268,13 @@ def post_thread(board_name):
                     reply.delete_instance()
                     remove_media(reply.image)
 
-    redirect(f"/{board_name}/")
+    redirect(f"{basename}/{board_name}/")
 
-@post('/<board_name>/thread/<refnum:int>')
+@post(f'{basename}/<board_name>/thread/<refnum:int>')
 def post_reply(board_name, refnum):
 
     current_user = get_current_user(request)
-    if get_current_user(request).banned: return redirect("/ban_info")
+    if get_current_user(request).banned: return redirect(f"{basename}/ban_info")
 
     board = Board.get(Board.name == board_name)
     thread = board.posts.where(Post.refnum == refnum).get()
@@ -282,7 +284,7 @@ def post_reply(board_name, refnum):
 
     content = request.forms.get('content')
 
-    if not bool(content): return redirect(f'/{board_name}/')
+    if not bool(content): return redirect(f'{basename}/{board_name}/')
 
     if len(content) > int(config['threads.content_max_length']):
             return abort(400, "The content exeeds the maximum length.")
@@ -349,9 +351,9 @@ def post_reply(board_name, refnum):
     board.lastrefnum += 1
     board.save()
 
-    redirect(f"/{board_name}/")
+    redirect(f"{basename}/{board_name}/")
 
-@post('/<board_name>/delete')
+@post(f'{basename}/<board_name>/delete')
 def delete_post(board_name):
 
     current_user = get_current_user(request)
@@ -362,7 +364,7 @@ def delete_post(board_name):
     if bool(form.get('report')):
         reason = form.get('report')
         report_reasons = loads(config['reports.reasons'])
-        if reason not in report_reasons: return redirect(f'/{board_name}/')
+        if reason not in report_reasons: return redirect(f'{basename}/{board_name}/')
         for refnum in list(form)[:-1]:
             report = Report(reason=reason, refnum=refnum, board=board, date=datetime.now().replace(microsecond=0))
             report.save()
@@ -399,9 +401,9 @@ def delete_post(board_name):
                 Report.delete().where(refnum == thread.refnum).execute()
 
 
-    redirect(f"/{board_name}/")
+    redirect(f"{basename}/{board_name}/")
 
-@post('/<board_name>/ban')
+@post(f'{basename}/<board_name>/ban')
 def ban(board_name):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -415,9 +417,9 @@ def ban(board_name):
 
     Anon.update(banned=True, ban_reason=reason, ban_date=datetime.now().replace(microsecond=0)).where(Anon.name == user).execute()
 
-    return redirect(f"/{board_name}/mod")
+    return redirect(f"{basename}/{board_name}/mod")
 
-@post('/<board_name>/unban/<name>')
+@post(f'{basename}/<board_name>/unban/<name>')
 def unban(board_name, name):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -433,9 +435,9 @@ def unban(board_name, name):
     if bool(form.get("unban")):
         Anon.update(banned=False, ban_reason=None, ban_date=None).where(Anon.name == name).execute()
 
-    return redirect(f"/{board_name}/mod")
+    return redirect(f"{basename}/{board_name}/mod")
 
-@post('/add_board')
+@post(f'{basename}/add_board')
 def add_board():
 
     if check_admin(request) == 1:
@@ -459,9 +461,9 @@ def add_board():
     board.save()
     board_directory(name)
 
-    return redirect("/admin")
+    return redirect(f"{basename}/admin")
 
-@post('/del_board/<board_name>')
+@post(f'{basename}/del_board/<board_name>')
 def del_board(board_name):
 
     if check_admin(request) == 1:
@@ -478,9 +480,9 @@ def del_board(board_name):
     board.delete_instance()
     board_directory(board_name, remove=True)
 
-    return redirect("/admin")
+    return redirect(f"{basename}/admin")
 
-@post('/mod')
+@post(f'{basename}/mod')
 def mod():
 
     if check_admin(request) == 1:
@@ -501,9 +503,9 @@ def mod():
 
     anon.save()
 
-    return redirect(f"/admin")
+    return redirect(f"{basename}/admin")
 
-@post('/new_mod')
+@post(f'{basename}/new_mod')
 def add_mod():
 
     if check_admin(request) == 1:
@@ -521,9 +523,9 @@ def add_mod():
 
     anon.save()
 
-    return redirect(f"/admin")
+    return redirect(f"{basename}/admin")
 
-@get('/<board_name>/thread/<refnum:int>/pin')
+@get(f'{basename}/<board_name>/thread/<refnum:int>/pin')
 def thread_pin(board_name, refnum):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -538,9 +540,9 @@ def thread_pin(board_name, refnum):
 
     thread.save()
 
-    return redirect(f'/{board_name}/')
+    return redirect(f'{basename}/{board_name}/')
 
-@get('/<board_name>/thread/<refnum:int>/close')
+@get(f'{basename}/<board_name>/thread/<refnum:int>/close')
 def thread_close(board_name, refnum):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -555,7 +557,7 @@ def thread_close(board_name, refnum):
 
     thread.save()
 
-    return redirect(f'/{board_name}/')
+    return redirect(f'{basename}/{board_name}/')
 
 if __name__ == '__main__':
 
