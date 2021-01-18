@@ -155,9 +155,9 @@ def admin_panel():
 
     if bool(logged_cookie):
 
-        if logged_cookie != config['admin.token']: return redirect(f"/")
+        if logged_cookie != config['admin.token']: return redirect('/')
 
-    else: return redirect(f"/")
+    else: return redirect('/')
 
     return dict(boards=Board.select(), current_user=current_user,
             board_name=None, mods=Anon.select().where(Anon.mod != ""),
@@ -181,22 +181,22 @@ def do_login():
 
         response.set_cookie("logged", config['admin.token'])
 
-        return redirect(f"/admin")
+        return redirect('/admin')
 
-    return redirect(f"/login")
+    return redirect('/login')
 
 @post('/logout')
 def do_logout():
 
     response.delete_cookie('logged')
 
-    return redirect(f"/")
+    return redirect('/')
 
 @post('/<board_name>/')
 def post_thread(board_name):
 
     current_user = get_current_user(request)
-    if get_current_user(request).banned: return redirect(f"/ban_info")
+    if get_current_user(request).banned: return redirect('/ban_info')
 
     board = Board.get(Board.name == board_name)
 
@@ -271,7 +271,7 @@ def post_thread(board_name):
 def post_reply(board_name, refnum):
 
     current_user = get_current_user(request)
-    if get_current_user(request).banned: return redirect(f"/ban_info")
+    if get_current_user(request).banned: return redirect('/ban_info')
 
     board = Board.get(Board.name == board_name)
     thread = board.posts.where(Post.refnum == refnum).get()
@@ -457,7 +457,7 @@ def add_board():
     board.save()
     board_directory(name)
 
-    return redirect(f"/admin")
+    return redirect('/admin')
 
 @post('/del_board/<board_name>')
 def del_board(board_name):
@@ -476,9 +476,9 @@ def del_board(board_name):
     board.delete_instance()
     board_directory(board_name, remove=True)
 
-    return redirect(f"/admin")
+    return redirect('/admin')
 
-@post(f'/mod')
+@post('/mod')
 def mod():
 
     if check_admin(request) == 1:
@@ -499,9 +499,9 @@ def mod():
 
     anon.save()
 
-    return redirect("/admin")
+    return redirect('/admin')
 
-@post(f'/new_mod')
+@post('/new_mod')
 def add_mod():
 
     if check_admin(request) == 1:
@@ -521,7 +521,7 @@ def add_mod():
 
     return redirect('/admin')
 
-@get(f'/<board_name>/thread/<refnum:int>/pin')
+@get('/<board_name>/thread/<refnum:int>/pin')
 def thread_pin(board_name, refnum):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -538,7 +538,7 @@ def thread_pin(board_name, refnum):
 
     return redirect(f'/{board_name}/')
 
-@get(f'/<board_name>/thread/<refnum:int>/close')
+@get('/<board_name>/thread/<refnum:int>/close')
 def thread_close(board_name, refnum):
 
     if f':{board_name}:' not in get_current_user(request).mod:
@@ -568,4 +568,3 @@ if __name__ == '__main__':
                max_request_body_size=upload_max_size * 1024**2, url_prefix=basename)
     else:
         run(debug=True, reloader=True, host=config['app.host'], port=config['app.port'])
-

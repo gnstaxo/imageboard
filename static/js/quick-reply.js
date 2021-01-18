@@ -15,7 +15,12 @@ function window_reply(button, board_name, thread_refnum, post_refnum){
 
 function open_window()
 {
-  var board_name = document.URL.split("/").slice(3, 4);
+  var basename = document.URL.split("/").slice(3, 4);
+  var board_name = document.URL.split("/").slice(4, 5);
+  if (board_name == "")
+    board_name = basename
+  else
+    board_name = basename +"/"+ board_name
   var thread_refnum = $(this).parents(".Thread").attr("id")
   var post_refnum = $(this).text()
 
