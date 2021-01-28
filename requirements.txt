@@ -1,5 +1,5 @@
-bottle==0.12.18
-filetype==1.0.7
-Pillow==7.1.2
-waitress==1.4.4
-peewee==3.14.0
+bottle
+filetype
+Pillow
+waitress
+peewee
