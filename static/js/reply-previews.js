@@ -3,7 +3,7 @@ function show_preview(){
     var href = $(this).attr("href");
     var id = $(this).text().replace(/[>>\D]/g, '');
 
-    var is_thread = href.split("/").slice(3, 4)[0].includes("#")
+    var is_thread = href.split("/").slice(-1)[0].includes("#")
 
     elmnt = this;
 
