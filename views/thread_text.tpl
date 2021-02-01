@@ -50,7 +50,7 @@
 % end
 % content = thread.content if is_detail else thread.short_content
 % for line in content.split('\n'):
-  % if line.startswith(">") and line[1] != ">":
+  % if line.startswith(">") and len(line) > 1 and line[1] != ">":
     <span class="green-text">{{line}}</span><br>
   % elif line.startswith("<"): 
     <span class="pink-text">{{line}}</span><br>
