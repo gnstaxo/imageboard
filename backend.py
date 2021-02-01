@@ -248,7 +248,8 @@ def post_thread(board_name):
 
     max_active_threads = int(config['threads.max_active'])
 
-    query = board.posts.where(Post.is_reply == False).order_by(Post.pinned.desc(), Post.bumped_at.desc())
+    query = board.posts.where(Post.is_reply == False).order_by(
+            Post.pinned.desc(), Post.bumped_at.desc())
 
     if query.count() >= max_active_threads:
 

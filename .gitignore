@@ -131,3 +131,4 @@ dmypy.json
 librechan.db
 .mksh_history
 imageboard.conf
+uploads/

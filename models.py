@@ -60,7 +60,7 @@ class Post(Model):
     author = ForeignKeyField(Anon, backref='posts')
     refnum = IntegerField()
     replyrefnum = IntegerField(null=True)
-    date = CharField()
+    date = DateTimeField()
     bumped_at = DateTimeField(null=True)
     filename = CharField()
     image = CharField()
