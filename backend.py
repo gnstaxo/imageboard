@@ -3,7 +3,7 @@ from bottle import (run, static_file, request, view, redirect,
         abort, get, post, ConfigDict, response, default_app, error)
 from utils import random_name, file_validation, remove_media, board_directory, get_directory_size
 from json import loads, dumps
-from os import path
+from os import path, mkdir
 from string import punctuation
 from waitress import serve
 from models import db, Post, Anon, Board, Report
@@ -560,7 +560,7 @@ if __name__ == '__main__':
 
     db.connect()
 
-    if not path.isdir('uploads'): board_directory('uploads')
+    if not path.isdir('uploads'): mkdir('uploads')
 
     if config['app.production'] == 'True':
         upload_max_size = int(config['uploads.upload_max_size'])
