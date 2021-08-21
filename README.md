@@ -1,5 +1,5 @@
 # Imageboard
-![Screenshot](https://0x0.st/iv0g.png)
+![Screenshot](https://user-images.githubusercontent.com/35819528/130325864-1d529eda-3751-48a2-92ec-eff4ef67b5bf.png)
 
 ## Features
 - Simple markdown: bold (**), italic (*) and underline (__)
