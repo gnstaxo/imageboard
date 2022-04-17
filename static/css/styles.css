@@ -1,11 +1,11 @@
 a {
-	text-decoration: none;
-	color: #005566;
+  text-decoration: none;
+  color: #005566;
 }
 
 a:hover {
-	color: black;
-	text-decoration: underline;
+  color: black;
+  text-decoration: underline;
 }
 
 footer {
@@ -13,26 +13,26 @@ footer {
 }
 
 .Menu {
-	text-align: center;
+  text-align: center;
 }
 
 .Title {
-	text-align: center;
+  text-align: center;
 }
 
-.Formulario table{
-	margin: 10px auto;
+.Formulario table {
+  margin: 10px auto;
 }
 
 #reply-window th {
-	background-color: #697983;
+  background-color: #697983;
   border-radius: 3px;
   color: white;
   padding: 3px;
 }
 
 .Formulario th {
-	background-color: #697983;
+  background-color: #697983;
   border-radius: 3px;
   color: white;
   padding: 3px;
@@ -42,14 +42,16 @@ textarea {
   width: 100%;
 }
 .Thread {
-	border-top: 1px solid;
-	margin-bottom: 10px;
-	padding-top: 5px;
-	overflow: hidden;
+  border-top: 1px solid;
+  margin-bottom: 10px;
+  padding-top: 5px;
+  overflow: hidden;
 }
 
 .Thread-text {
-	margin-top: 5px;
+  word-wrap: break-word;
+  word-break: break-all;
+  margin-top: 5px;
 }
 
 .Thread-info {
@@ -57,9 +59,9 @@ textarea {
 }
 
 .Thread-image {
-	float: left;
-	margin-right: 10px;
-	margin-bottom: 10px;
+  float: left;
+  margin-right: 10px;
+  margin-bottom: 10px;
   cursor: pointer;
 }
 
@@ -68,16 +70,16 @@ textarea {
 }
 
 .Thread-video {
-	float: left;
-	margin-right: 10px;
+  float: left;
+  margin-right: 10px;
   cursor: pointer;
   max-width: 250px;
   max-height: 300px;
 }
 
 .Hilo-title {
-	font-weight: bold;
-	color: #002a32;
+  font-weight: bold;
+  color: #002a32;
 }
 
 .Thread-meta {
@@ -85,58 +87,58 @@ textarea {
 }
 
 .Reply {
-	margin: 5px 0;
+  margin: 5px 0;
 }
 
 .Reply-meta {
-	margin-top: 5px;
+  margin-top: 5px;
 }
 
 .Respuesta-flecha {
-	float: left;
+  float: left;
   color: #697983;
 }
 
 .Reply-image {
-	float: left;
-	margin-right: 5px;
-	cursor: pointer;
+  float: left;
+  margin-right: 5px;
+  cursor: pointer;
 }
 
 .Respuesta-cuerpo {
-	display: table;
-	padding: 10px 5px;
-	background-color: #d7dddd;
-	border: 1px solid #697983;
+  display: table;
+  padding: 10px 5px;
+  background-color: #d7dddd;
+  border: 1px solid #697983;
 }
 
 .Author {
-	padding: 3px;
-	border-radius: 3px;
-	color: white;
-	text-shadow: 1px 1px 1px black;
-  font-size: .75em;
+  padding: 3px;
+  border-radius: 3px;
+  color: white;
+  text-shadow: 1px 1px 1px black;
+  font-size: 0.75em;
 }
 
 .role {
   background-color: #25649f;
-	padding: 3px;
-	border-radius: 3px;
-	margin: 0 3px;
-	color: white;
-	text-shadow: 1px 1px 1px black;
-  font-size: .75em;
+  padding: 3px;
+  border-radius: 3px;
+  margin: 0 3px;
+  color: white;
+  text-shadow: 1px 1px 1px black;
+  font-size: 0.75em;
 }
 
 .Pagination {
-	text-align: center;
+  text-align: center;
   display: inline-block;
-	border: 1px solid #697983;
+  border: 1px solid #697983;
   padding: 10px;
 }
 
 .Pagination-number {
-	margin: 0 3px;
+  margin: 0 3px;
 }
 
 .Catalog {
@@ -149,10 +151,10 @@ textarea {
 }
 
 .Card {
-	width: 250px;
-	border: 1px solid #697983;
-	text-align: center;
-	margin: 10px;
+  width: 250px;
+  border: 1px solid #697983;
+  text-align: center;
+  margin: 10px;
 }
 
 .Card-body {
@@ -160,64 +162,65 @@ textarea {
   overflow: hidden;
 }
 
-.Card-title{
-	margin: 0;
+.Card-title {
+  margin: 0;
 }
 
 .Card-text {
   text-align: left;
   margin-left: 5px;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
 .Card a {
-	text-decoration: none;
+  text-decoration: none;
 }
 
 .Card-footer {
-	border-top: 1px solid #697983;
-	text-align: right;
-	padding-right: 5px;
+  border-top: 1px solid #697983;
+  text-align: right;
+  padding-right: 5px;
 }
 
 .hide-thread {
-	padding: 0 2px;
-	cursor: pointer;
+  padding: 0 2px;
+  cursor: pointer;
   font-weight: bold;
 }
 
 .hide-reply {
-	padding: 0 2px;
-	cursor: pointer;
+  padding: 0 2px;
+  cursor: pointer;
   font-weight: bold;
 }
 
 .Card-item {
-	display: inline-block;
+  display: inline-block;
 }
-
 
 .mb-0 {
   margin-bottom: 0;
 }
 
 .green-text {
-	color: green;
+  color: green;
 }
 
 .pink-text {
-	color: #DA5364;
+  color: #da5364;
 }
 
 .footer-message {
   margin-top: 10px;
   text-align: center;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 
 .footer-contact {
- margin-top: 20px;
- text-align: center; 
- font-size: .85em;
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.85em;
 }
 
 .Reports {
@@ -232,17 +235,18 @@ textarea {
   background-color: #697983;
 }
 
-.Boards thead{
+.Boards thead {
   font-weight: bold;
   color: white;
   background-color: #697983;
 }
 
-.Reports tr:nth-child(even){
-  background: #CCC;
+.Reports tr:nth-child(even) {
+  background: #ccc;
 }
 
-.Reports td,th {
+.Reports td,
+th {
   border: 1px solid black;
   padding-left: 5px;
 }
@@ -253,7 +257,7 @@ textarea {
   padding: 3px 6px;
   border-radius: 4px;
   cursor: pointer;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 
 .btn:hover {
@@ -263,7 +267,7 @@ textarea {
 
 .play {
   cursor: pointer;
-  font-size: .6em;
+  font-size: 0.6em;
 }
 
 .yt-container {
@@ -277,7 +281,7 @@ textarea {
 .less-replies {
   cursor: pointer;
   display: inline-block;
-  font-size: .8em;
+  font-size: 0.8em;
   margin: 5px 0;
 }
 
@@ -285,7 +289,7 @@ textarea {
   cursor: pointer;
   display: inline-block;
   margin: 5px 0;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 
 .Ban-form {
@@ -301,8 +305,8 @@ textarea {
 #reply-window {
   position: fixed;
   z-index: 9;
-	background-color: #E8EFEF;
-	border: 1px solid #697983;
+  background-color: #e8efef;
+  border: 1px solid #697983;
   border-radius: 5px;
   text-align: left;
   padding: 3px;
@@ -318,7 +322,7 @@ textarea {
 }
 
 .dopen {
-	color: #005566;
+  color: #005566;
   cursor: pointer;
 }
 
@@ -329,12 +333,12 @@ textarea {
 
 .less-thread {
   display: inline-block;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 
 .full-thread {
   display: inline-block;
-  font-size: .8em;
+  font-size: 0.8em;
 }
 
 .Boards {
@@ -367,25 +371,28 @@ textarea {
   color: darkred;
 }
 
-#msg-container, #stats {
+#msg-container,
+#stats {
   list-style: none;
   padding: 0;
   margin: 5px;
   margin-left: 5px;
 }
 
-#msg-container li, #stats li {
+#msg-container li,
+#stats li {
   margin: 5px 0;
-  font-size: .9em;
+  font-size: 0.9em;
 }
 
 #msg-container li a {
   margin-right: 5px;
 }
 
-#welcome, #stats {
+#welcome,
+#stats {
   margin: 5px;
-  font-size: .9em;
+  font-size: 0.9em;
 }
 
 #boards {
@@ -403,13 +410,13 @@ textarea {
 
 .op {
   background-color: #d18f4f;
-	padding: 3px;
-	border-radius: 3px;
-	color: white;
-	text-shadow: 1px 1px 1px black;
-  font-size: .75em;
+  padding: 3px;
+  border-radius: 3px;
+  color: white;
+  text-shadow: 1px 1px 1px black;
+  font-size: 0.75em;
 }
- /* Dropdown Button */
+/* Dropdown Button */
 .dropbtn {
   background-color: transparent;
   color: black;
@@ -435,8 +442,8 @@ textarea {
   display: none;
   position: absolute;
   background-color: white;
-	border: 1px solid #697983;
-	border-bottom: 0;
+  border: 1px solid #697983;
+  border-bottom: 0;
   z-index: 1;
   min-width: 6rem;
 }
@@ -450,20 +457,24 @@ textarea {
   cursor: pointer;
 }
 
-.dropdown-content a{
-  font-size: .8em;
+.dropdown-content a {
+  font-size: 0.8em;
   color: black;
   padding: 2px;
   text-decoration: none;
-	border-bottom: 1px solid #697983;
+  border-bottom: 1px solid #697983;
   display: block;
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: #ddd}
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
 
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
-.show {display:block;}
+.show {
+  display: block;
+}
 
 .Ban {
   margin-top: 20px;
@@ -471,15 +482,15 @@ textarea {
 }
 
 .Reply-floating {
-	padding: 10px 5px;
-	background-color: #d7dddd;
-	border: 1px solid #697983;
+  padding: 10px 5px;
+  background-color: #d7dddd;
+  border: 1px solid #697983;
   position: absolute;
 }
 
 .Reply-video {
-	float: left;
-	margin-right: 5px;
+  float: left;
+  margin-right: 5px;
   cursor: pointer;
 }
 
@@ -488,10 +499,10 @@ textarea {
 }
 
 .reps {
-  font-size: .85em;
+  font-size: 0.85em;
 }
 
-a.reps{
+a.reps {
   margin-right: 3px;
 }
 
@@ -509,7 +520,10 @@ a.reps{
     margin: 0;
     width: 100%;
   }
-  .Thread-image,.Thread-video,.Reply-image,.Reply-video {
+  .Thread-image,
+  .Thread-video,
+  .Reply-image,
+  .Reply-video {
     max-width: 100px;
     max-height: 100px;
     margin-left: 2px;
@@ -526,7 +540,7 @@ a.reps{
   }
   .Respuesta-cuerpo {
     display: block;
-    margin: .5rem;
+    margin: 0.5rem;
   }
   .Boards {
     width: 100%;
@@ -545,7 +559,8 @@ a.reps{
     float: none;
     margin-bottom: 10px;
   }
-  .load-replies,.less-replies {
+  .load-replies,
+  .less-replies {
     margin-left: 1rem;
   }
   .Card-body {
