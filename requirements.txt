@@ -1,4 +1,4 @@
-bottle==0.12.19
+bottle==0.12.20
 filetype==1.0.7
 Pillow==8.3.2
 waitress==2.0.0
