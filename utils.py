@@ -19,13 +19,11 @@ def thumbnail(path, refnum, ext, is_reply=False):
             thumb_height = round(im.height * (thumb_width / im.width))
 
             im = im.resize((thumb_width, thumb_height))
-            im.thumbnail((thumb_width, thumb_height))
         else:
             thumb_height = 125 if is_reply else 250
             thumb_width = round(im.width * (thumb_height / im.height))
 
             im = im.resize((thumb_width, thumb_height))
-            im.thumbnail((thumb_width, thumb_height))
 
         if ext == '.png' and im.mode == "RGBA":
 
@@ -33,16 +31,20 @@ def thumbnail(path, refnum, ext, is_reply=False):
 
             bg.paste(im, im)
             bg.save(save_path)
+        elif ext == '.gif':
+            im.seek(0)
+            im = im.convert('RGB')
+            im.save(save_path)
         else:
             im.save(save_path)
 
-def file_validation(board_name, refnum, upload, strip_metadata, is_reply=False): 
+def file_validation(board_name, refnum, upload, is_reply=False): 
 
     name, ext = os.path.splitext(upload.filename)
 
-    image_ext = ('.png','.jpg','.jpeg')
+    valid_ext = ('png','jpg','jpeg','gif', 'mp4', 'webm', 'ogg')
 
-    if ext not in image_ext and ext not in ('.mp4', '.webm', '.ogg'):
+    if ext[1:] not in valid_ext:
         return 1
 
     save_path = "uploads/%s/%s%s" % (board_name, refnum, ext)
@@ -51,20 +53,11 @@ def file_validation(board_name, refnum, upload, strip_metadata, is_reply=False):
 
     mime = filetype.guess(save_path)
 
-    if mime.EXTENSION not in ('png','jpg','jpeg','mp4', 'webm', 'ogg'):
+    if mime.EXTENSION not in valid_ext or mime.EXTENSION != ext[1:]:
         os.remove(save_path)
         return 1
 
-    if mime.EXTENSION in map(lambda ext: ext[1:], image_ext): # remove '.'
-        thumbnail(save_path, refnum, ext, is_reply)
-
-    if ext in image_ext and strip_metadata:
-        img = Image.open(save_path)
-        data = list(img.getdata())
-        no_exif = Image.new(img.mode, img.size)
-        no_exif.putdata(data)
-        no_exif.save(save_path)
-
+    thumbnail(save_path, refnum, ext, is_reply)
 
     return save_path
 

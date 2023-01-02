@@ -20,7 +20,7 @@
       </tr>
       <tr>
         <th>File</th>
-        <td><small id="max-size">Max file size: {{max_file_size}}MB.</small><br><input type="file" name="upload" accept=".jpg,.png,.mp4,.ogg,.webm" required></td>
+        <td><small id="max-size">Max file size: {{max_file_size}}MB.</small><br><input type="file" name="upload" required></td>
       </tr>
     </tbody>
   </table>

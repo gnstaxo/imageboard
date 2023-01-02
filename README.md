@@ -1,5 +1,5 @@
 # Imageboard
-![Screenshot](https://user-images.githubusercontent.com/35819528/130325864-1d529eda-3751-48a2-92ec-eff4ef67b5bf.png)
+![Screenshot](screenshot.png)
 
 ## Features
 - Simple markdown: bold (**), italic (*) and underline (__)
@@ -39,5 +39,5 @@
 Admin dashboard is at `/admin` for which you'll first have to go through `/login`.
 
 ## Notes
-- The function to limit the size of uploads and reverse proxy only work in production mode.
+- The functions to limit the size of uploads and reverse proxy only work in production mode.
 - To use a MySQL database install pymysql, and psycopg2 for Postgresql.

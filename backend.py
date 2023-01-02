@@ -211,8 +211,7 @@ def post_thread(board_name):
 
     author = current_user
     refnum = board.lastrefnum
-    save_path = file_validation(board_name, refnum, upload,
-        (config['uploads.strip_metadata'] == 'True'))
+    save_path = file_validation(board_name, refnum, upload)
 
     if len(content.split('\n')) < 10:
         short_content = ' '.join(content.split(' ')[:200])
@@ -305,10 +304,9 @@ def post_reply(board_name, refnum):
 
     by_mod = (f':{board_name}:' in current_user.mod)
 
-    if upload is not None:
+    if upload.content_type.startswith('image') or upload.content_type.startswith('video'):
 
-        save_path = file_validation(board_name, no, upload,
-                    (config['uploads.strip_metadata'] == 'True'), is_reply=True)
+        save_path = file_validation(board_name, no, upload, is_reply=True)
         if save_path == 1: return redirect(f'{basename}/{board_name}/thread/{refnum}')
         filename = upload.filename
 
