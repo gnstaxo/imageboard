@@ -8,14 +8,8 @@
 - Reply previews
 - Mod and Admin functions
 - Youtube embeds
+- Captcha
 - Mobile responsive design (through CSS media queries)
-
-## Dependencies
-- bottle: Web framework.
-- filetype: To make sure people upload valid files.
-- Pillow: To create thumbnails and get image dimensions.
-- waitress: Production server.
-- peewee: SQL ORM.
 
 ## Guide
 1. Clone the repository and access the folder:
