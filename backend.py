@@ -6,8 +6,10 @@ from json import loads, dumps
 from os import path, mkdir
 from string import punctuation
 from waitress import serve
-from models import db, Post, Anon, Board, Report
-from datetime import datetime
+from models import db, Post, Anon, Board, Report, Captcha
+from datetime import datetime,timedelta
+from captcha.image import ImageCaptcha
+from random import randint
 
 config = ConfigDict()
 config.load_config('imageboard.conf')
@@ -53,6 +55,31 @@ def home():
             welcome_message=config['app.welcome_message'],
             show_nsfw=show_nsfw, active_content_size=active_content_size,
             number_of_messages=number_of_messages, basename=basename)
+
+@get('/captcha')
+def generate_captcha():
+
+    text = randint(10000,99999)
+    time_exp = datetime.now() + timedelta(minutes=5)
+
+    captcha = Captcha(text = text, time_exp = time_exp)
+    captcha.save()
+
+    challenge = {
+        'id': captcha.id,
+        'text': text,
+        'time_exp': str(time_exp)
+    }
+
+    return dumps(challenge)
+
+@get('/captchaimg/<cha:int>')
+def captcha_image(cha):
+    image = ImageCaptcha()
+    code = Captcha.get_by_id(cha).text
+    data = image.generate(code)
+    response.content_type = "image/png"
+    return data
 
 @get('/<board_name>/')
 @get('/<board_name:re:[a-z0-9]+>')
@@ -195,6 +222,14 @@ def do_logout():
 @post('/<board_name>/')
 def post_thread(board_name):
 
+    captchares = request.forms.get('captchares')
+    captchaid = request.forms.get('captchaid')
+
+    challenge = Captcha.get_by_id(captchaid)
+
+    if (challenge.text != captchares or
+    challenge.time_exp <= datetime.now()): return abort(403, "Invalid Captcha.")
+
     current_user = get_current_user(request)
     if get_current_user(request).banned: return redirect(f'{basename}/ban_info')
 
@@ -223,20 +258,15 @@ def post_thread(board_name):
 
     if save_path == 1: return redirect(f'{basename}/{board_name}/')
 
-    by_mod = (f':{board_name}:' in current_user.mod)
-
     data = {
         "board": board,
         "author": author,
         "refnum": refnum,
-        "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
-        "bumped_at": datetime.now().replace(microsecond=0),
         "filename": upload.filename,
         "image": save_path,
         "title": title,
         "content": content,
         "short_content": short_content,
-        "by_mod": by_mod
     }
 
     thread = Post(**data)
@@ -302,8 +332,6 @@ def post_reply(board_name, refnum):
     filename = ""
     save_path = ""
 
-    by_mod = (f':{board_name}:' in current_user.mod)
-
     if upload.content_type.startswith('image') or upload.content_type.startswith('video'):
 
         save_path = file_validation(board_name, no, upload, is_reply=True)
@@ -316,12 +344,10 @@ def post_reply(board_name, refnum):
         "refnum": no,
         "is_reply": True,
         "replyrefnum": refnum,
-        "date": datetime.now().strftime("%d/%m/%Y %H:%M"),
         "filename": filename,
         "image": save_path,
         "content": content,
         "short_content": short_content,
-        "by_mod": by_mod
     }
 
     reply = Post(**data)

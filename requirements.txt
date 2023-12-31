@@ -3,3 +3,4 @@ filetype
 Pillow
 waitress
 peewee
+captcha

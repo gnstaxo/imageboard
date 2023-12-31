@@ -6,7 +6,7 @@
 	<div class="Respuesta-cuerpo">
   <input type="checkbox" name="{{reply.refnum}}" value="delete">
 	<span class="Author" style="background-color: {{author_color(reply.author.name)}};">{{reply.author.name}}</span>
-	    % if reply.by_mod:
+	    % if f':{board_name}:' in reply.author.mod:
 		    <span class="role">Mod</span>
 	    % end
 	    % if Post.get(Post.refnum == reply.replyrefnum).author.name == reply.author.name:

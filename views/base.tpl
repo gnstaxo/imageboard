@@ -17,6 +17,7 @@
     <script src="{{basename}}/static/lib/autolink-min.js"></script>
     <script src="{{basename}}/static/js/post-markdown.js"></script>
     % if defined('board_name'):
+      <script src="{{basename}}/static/js/captcha.js"></script>
       <script src="{{basename}}/static/js/hide-post.js"></script>
       <script src="{{basename}}/static/js/youtube.js"></script>
       <script src="{{basename}}/static/js/quick-reply.js"></script>

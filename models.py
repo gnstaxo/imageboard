@@ -1,3 +1,4 @@
+import datetime
 from peewee import *
 from bottle import ConfigDict
 
@@ -60,8 +61,8 @@ class Post(Model):
     author = ForeignKeyField(Anon, backref='posts')
     refnum = IntegerField()
     replyrefnum = IntegerField(null=True)
-    date = DateTimeField()
-    bumped_at = DateTimeField(null=True)
+    date = DateTimeField(default=datetime.datetime.now)
+    bumped_at = DateTimeField(null=True, default=datetime.datetime.now)
     filename = CharField()
     image = CharField()
     title = CharField(null=True)
@@ -70,7 +71,6 @@ class Post(Model):
     is_reply = BooleanField(default=False)
     closed = BooleanField(default=False)
     pinned = BooleanField(default=False)
-    by_mod = BooleanField(default=False)
     replylist = CharField(default="[]")
 
     class Meta:
@@ -85,5 +85,12 @@ class Report(Model):
     class Meta:
         database = db
 
+class Captcha(Model):
+    text = CharField()
+    time_exp = DateTimeField()
+
+    class Meta:
+        database = db
+
 with db:
-    db.create_tables([Report, Post, Board, Anon])
+    db.create_tables([Report, Post, Board, Anon, Captcha])

@@ -11,7 +11,7 @@
       <tr>
         <th>Title</th>
         <td>
-          <input type="text" name="title" required> <input type="submit" value="Post">
+          <input type="text" name="title" required> <button id="btnPost">Post</button>
         </td>
       </tr>
       <tr>
