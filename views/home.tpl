@@ -20,7 +20,7 @@
 <div class="Boards">
   <h2 class="Boards-title">Latest images</h2>
   <div id="img-container">
-    % images_to_show = Post.select().join(Board).where((Board.nsfw == show_nsfw) & (Post.image != "")).limit(10)
+    % images_to_show = Post.select().join(Board).where((Board.nsfw == show_nsfw) & (Post.image != "")).order_by(Post.date.desc()).limit(10)
     % if images_to_show.count() == 0:
     No images have been uploaded.
     % else:
@@ -44,7 +44,7 @@
 <div class="Boards">
   <h2 class="Boards-title">Latest messages</h2>
     <ul id="msg-container">
-      % messages_to_show = Post.select().join(Board).where(Board.nsfw == show_nsfw)
+      % messages_to_show = Post.select().join(Board).where(Board.nsfw == show_nsfw).order_by(Post.date.desc())
       % if messages_to_show.count() == 0:
       No messages have been created.
       % else:
