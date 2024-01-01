@@ -107,7 +107,8 @@ def get_board(board_name, page=1):
             thread_count=query.count(),
             max_file_size=config['uploads.upload_max_size'],
             maxlength=config['threads.content_max_length'],
-            per_page=per_page, basename=basename
+            per_page=per_page, basename=basename,
+            host='://'.join(request.urlparts[:2])
         )
 
 @get('/ban_info')
@@ -135,7 +136,9 @@ def get_thread(board_name, refnum):
     return dict(board_name=board.name, thread=thread, board=board,
             is_detail=True, current_user=get_current_user(request),
             max_file_size=config['uploads.upload_max_size'],
-            maxlength=config['threads.content_max_length'], basename=basename)
+            maxlength=config['threads.content_max_length'], basename=basename,
+            host='://'.join(request.urlparts[:2])
+    )
 
 @get('/<board_name>/catalog')
 @view('catalog')

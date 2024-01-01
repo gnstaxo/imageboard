@@ -1,4 +1,3 @@
-% from bottle import ConfigDict
 <!DOCTYPE html>
 <html lang="en">
 <head>
