@@ -4,4 +4,5 @@
 <form class="Login" action="{{basename}}/login" method="POST">
   Enter the admin password:<br>
   <input type="password" name="password"><br><br>
+  <input type="submit" value="Login">
 </form>

@@ -1,10 +1,36 @@
-function window_reply(button, board_name, thread_refnum, post_refnum){
+function window_reply(button, board_name, thread_refnum, post_refnum, detail_view){
 
   var maxlength = $(document).find("#texta1").attr("maxlength");
   var maxsize = $(document).find("#max-size").text()
   var chars = post_refnum.length + 3
 
-  $(button).parents(".Thread").before('<div id="reply-window"> <div id="window-header">Reply to thread #'+thread_refnum+'<span class="dclose">X</span></div> <form method="POST" action="/'+board_name+'/thread/'+thread_refnum+'" enctype="multipart/form-data"> <table> <tbody> <tr> <th>Comment</th> <td><textarea maxlength="'+maxlength+'" id="texta2" rows="6" name="content" required>>>'+post_refnum+'\n</textarea><br><small style="opacity:.5;">Max message length: <span id="count2">'+chars+'</span>/'+maxlength+'</small></td> </tr><tr><th>File</th><td><small>'+maxsize+'</small><br><input type="file" name="upload"> <input type="submit" value="Reply"></td> </tr> </tbody> </table> </form> </div>')
+  var action_url = `/${board_name}/thread/${thread_refnum}`
+
+  if (detail_view) {
+    // The string '/thread/' is included in the board_name variable.
+    action_url = `/${board_name}/${thread_refnum}`
+  }
+
+  var window_template = `
+  <div id="reply-window">
+    <div id="window-header">Reply to thread #${thread_refnum}<span class="dclose">X</span></div>
+    <form method="POST" action="${action_url}" enctype="multipart/form-data">
+      <table>
+        <tbody>
+          <tr>
+            <th>Comment</th>
+            <td><textarea maxlength="${maxlength}" id="texta2" rows="6" name="content" required>>>${post_refnum}\n</textarea> <br><small style="opacity:.5;">Max message length: <span id="count2">${chars}</span>/${maxlength}</small></td>
+          </tr>
+          <tr>
+            <th>File</th>
+            <td><small>${maxsize}</small><br><input type="file" name="upload"> <input type="submit" value="Reply"></td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>`
+
+  $(button).parents(".Thread").before(window_template)
 
   window_width = $("#reply-window").width();
   $("#reply-window").css("left", $(window).width() - window_width - 8);
@@ -17,6 +43,7 @@ function open_window()
 {
   var basename = document.URL.split("/").slice(3, 4);
   var board_name = document.URL.split("/").slice(4, 5);
+  var detail_view = document.URL.search("/thread/");
   if (board_name == "")
     board_name = basename
   else
@@ -29,18 +56,21 @@ function open_window()
     win = $("#reply-window")
     if ( win.attr("for") == thread_refnum )
     {
-      a = win.find("textarea").val() + ">>" + post_refnum + "\n";
+      if (win.find("textarea").val().length)
+        a = win.find("textarea").val() + "\n" + ">>" + post_refnum + "\n";
+      else
+        a = win.find("textarea").val() + ">>" + post_refnum + "\n";
       win.find("textarea").val(a);
       win.find("#count2").text(win.find("textarea").val().length);
       win.find("textarea").focus();
     }
     else {
       $("#reply-window").detach()
-      window_reply(this, board_name, thread_refnum, post_refnum)
+      window_reply(this, board_name, thread_refnum, post_refnum, detail_view)
     }
   }
   else {
-    window_reply(this, board_name, thread_refnum, post_refnum)
+    window_reply(this, board_name, thread_refnum, post_refnum, detail_view)
   }
 
   // Make the DIV element draggable:
