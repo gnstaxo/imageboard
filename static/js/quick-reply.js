@@ -6,7 +6,7 @@ function window_reply(button, board_name, thread_refnum, post_refnum, detail_vie
 
   var action_url = `/${board_name}/thread/${thread_refnum}`
 
-  if (detail_view) {
+  if (detail_view > 0) {
     // The string '/thread/' is included in the board_name variable.
     action_url = `/${board_name}/${thread_refnum}`
   }
