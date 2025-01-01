@@ -17,10 +17,11 @@
     % end
   </div>
 </div>
+% if home_images:
 <div class="Boards">
   <h2 class="Boards-title">Latest images</h2>
   <div id="img-container">
-    % images_to_show = Post.select().join(Board).where((Board.nsfw == show_nsfw) & (Post.image != "")).order_by(Post.date.desc()).limit(10)
+    % images_to_show = Post.select().join(Board).where((Board.nsfw == show_nsfw) & (Post.image != "")).order_by(Post.date.desc()).limit(home_images)
     % if images_to_show.count() == 0:
     No images have been uploaded.
     % else:
@@ -41,10 +42,12 @@
     % end
   </div>
 </div>
+% end
+% if home_messages:
 <div class="Boards">
   <h2 class="Boards-title">Latest messages</h2>
     <ul id="msg-container">
-      % messages_to_show = Post.select().join(Board).where(Board.nsfw == show_nsfw).order_by(Post.date.desc()).limit(10)
+      % messages_to_show = Post.select().join(Board).where(Board.nsfw == show_nsfw).order_by(Post.date.desc()).limit(home_messages)
       % if messages_to_show.count() == 0:
       No messages have been created.
       % else:
@@ -60,6 +63,7 @@
       % end
     </ul>
 </div>
+% end
 <div class="Boards">
   <h2 class="Boards-title">Stats</h2>
   <ul id="stats">

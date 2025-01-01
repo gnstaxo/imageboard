@@ -53,6 +53,8 @@ def home():
     number_of_messages = Post.select().count()
     return dict(title=config['app.title'],
             welcome_message=config['app.welcome_message'],
+            home_messages=int(config['threads.home_messages']),
+            home_images=int(config['threads.home_images']),
             show_nsfw=show_nsfw, active_content_size=active_content_size,
             number_of_messages=number_of_messages, basename=basename)
 
