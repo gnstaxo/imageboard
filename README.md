@@ -10,6 +10,8 @@
 - Youtube embeds
 - Captcha
 - Mobile responsive design (through CSS media queries)
+- Closing/pinning threads
+- Reverse image search
 
 ## Guide
 1. Clone the repository and access the folder:
@@ -33,5 +35,5 @@
 Admin dashboard is at `/admin` for which you'll first have to go through `/login`.
 
 ## Notes
-- The functions to limit the size of uploads and reverse proxy only work in production mode.
+- Reverse proxy only works in production mode.
 - To use a MySQL database install pymysql, and psycopg2 for Postgresql.
