@@ -24,7 +24,7 @@
 		% end
 		</a>
     % if not is_video(reply.filename):
-      [<a href="{{basename}}https://www.google.com/searchbyimage?image_url=http://192.168.1.104/{{reply.image}}"class="gsearch">S</a>]
+      [<a href="https://www.google.com/searchbyimage?image_url={{host}}{{basename}}/{{thread.image}}&client=app" class="gsearch">S</a>]
     % end
     % if not is_video(reply.filename):
       ({{image_size(reply.image)}})

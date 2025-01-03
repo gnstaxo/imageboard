@@ -12,7 +12,7 @@
   % end
   </a>
   % if not is_video(thread.filename):
-      [<a href="https://www.google.com/searchbyimage?image_url={{host}}{{basename}}/{{thread.image}}&client=app"class="gsearch">S</a>]
+      [<a href="https://www.google.com/searchbyimage?image_url={{host}}{{basename}}/{{thread.image}}&client=app" class="gsearch">S</a>]
   % end
     ({{image_size(thread.image)}})
     </span>
