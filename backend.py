@@ -600,7 +600,7 @@ if __name__ == '__main__':
     if not path.isdir('uploads'): mkdir('uploads')
 
     if config['app.production'] == 'True':
-        upload_max_size = int(config['uploads.upload_max_size'])
+        upload_max_size = float(config['uploads.upload_max_size'])
         application = default_app()
         serve(application, listen=config['app.host']+':'+config['app.port'],
                max_request_body_size=upload_max_size * 1024**2, url_prefix=basename)
