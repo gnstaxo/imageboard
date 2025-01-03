@@ -249,7 +249,7 @@ def post_thread(board_name):
     if len(content) > int(config['threads.content_max_length']):
             return abort(400, "The content exeeds the maximum length.")
 
-    if request.content_length > int(config['uploads.upload_max_size']) * 1024 * 1024:
+    if request.content_length > float(config['uploads.upload_max_size']) * 1024 * 1024:
         return abort(400, "The file exeeds the maximum size.")
 
     author = current_user
@@ -342,7 +342,7 @@ def post_reply(board_name, refnum):
 
     if upload is not None:
 
-        if request.content_length > int(config['uploads.upload_max_size']) * 1024 * 1024:
+        if request.content_length > float(config['uploads.upload_max_size']) * 1024 * 1024:
             return abort(400, "The file exeeds the maximum size.")
 
         if upload.content_type.startswith('image') or upload.content_type.startswith('video'):
