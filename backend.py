@@ -393,7 +393,10 @@ def remove_textual_refs(board, thread):
         if word[:2] == ">>":
             ref = word[2:]
             if ref.rstrip().isdigit():
-                thread_ref = board.posts.where(Post.refnum == ref).get()
+
+                thread_ref = board.posts.where(Post.refnum == ref).get_or_none()
+                if thread_ref is None: continue
+
                 replylist = loads(thread_ref.replylist)
                 if thread.refnum in replylist:
                     replylist.remove(thread.refnum)
