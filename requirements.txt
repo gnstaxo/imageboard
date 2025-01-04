@@ -1,6 +1,6 @@
 bottle
 filetype
 Pillow
-waitress
 peewee
 captcha
+

@@ -5,7 +5,6 @@ from utils import random_name, file_validation, remove_media, board_directory, g
 from json import loads, dumps
 from os import path, mkdir
 from string import punctuation
-from waitress import serve
 from models import db, Post, Anon, Board, Report, Captcha
 from datetime import datetime,timedelta
 from captcha.image import ImageCaptcha
@@ -15,7 +14,6 @@ config = ConfigDict()
 config.load_config('imageboard.conf')
 
 basename = config['app.basename']
-
 if basename[-1] == '/': basename = basename[:-1] # remove trailing slash
 
 @get('/static/<filename:path>')
@@ -599,10 +597,44 @@ if __name__ == '__main__':
 
     if not path.isdir('uploads'): mkdir('uploads')
 
-    if config['app.production'] == 'True':
-        upload_max_size = float(config['uploads.upload_max_size'])
-        application = default_app()
-        serve(application, listen=config['app.host']+':'+config['app.port'],
-               max_request_body_size=upload_max_size * 1024**2, url_prefix=basename)
-    else:
-        run(debug=True, reloader=True, host=config['app.host'], port=config['app.port'])
+    url_prefix = basename
+
+    def fix_environ_middleware(app):
+      def fixed_app(environ, start_response):
+        path = environ['PATH_INFO']
+        if path.startswith("/"):
+            # strip extra slashes at the beginning of a path that starts
+            # with any number of slashes
+            path = "/" + path.lstrip("/")
+
+        if url_prefix:
+            # NB: url_prefix is guaranteed by the configuration machinery to
+            # be either the empty string or a string that starts with a single
+            # slash and ends without any slashes
+            if path == url_prefix:
+                # if the path is the same as the url prefix, the SCRIPT_NAME
+                # should be the url_prefix and PATH_INFO should be empty
+                path = ""
+            else:
+                # if the path starts with the url prefix plus a slash,
+                # the SCRIPT_NAME should be the url_prefix and PATH_INFO should
+                # the value of path from the slash until its end
+                url_prefix_with_trailing_slash = url_prefix + "/"
+                if path.startswith(url_prefix_with_trailing_slash):
+                    path = path[len(url_prefix) :]
+        environ['SCIPT_NAME'] = url_prefix
+        environ['PATH_INFO'] = path
+        return app(environ, start_response)
+      return fixed_app
+
+    app = default_app()
+    app.wsgi = fix_environ_middleware(app.wsgi)
+
+    production = bool(int(config['app.production']))
+
+    run(
+        debug    = not production,
+        reloader = not production,
+        host     = config['app.host'],
+        port     = config['app.port']
+    )
