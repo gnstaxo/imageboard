@@ -3,6 +3,14 @@ $( document ).ready(function(){
     if ($("#captcha").length){
       $(".Formulario").submit()
     } else {
+      $('.Formulario > table > tbody > tr').eq(1).after(`
+        <tr id="captcha">
+          <td></td>
+          <td>
+            Getting captcha...
+          </td>
+        </tr>
+      `)
       e.preventDefault()
       $.ajax({
         url: "/captcha",
@@ -11,6 +19,7 @@ $( document ).ready(function(){
         success: function(data){
           // Add 5 minutes to current time
           var countDownDate = new Date().getTime() + 300000
+          $('.Formulario > table > tbody > tr').eq(2).remove()
           $('.Formulario > table > tbody > tr').eq(1).after(`
             <tr id="captcha">
               <td><img src="/captchaimg/${data['id']}"></td>

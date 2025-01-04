@@ -10,13 +10,24 @@ function expand_images(){
 
     $(this).attr("src", image_full);
     $(this).addClass("full-image");
-    $(this).css("max-width", thread_width / 2);
+    if(window.matchMedia('(max-width: 600px)').matches){
+
+      $(this).css("max-width", "100%");
+      $(this).css("max-height", "initial");
+
+    } else {
+      $(this).css("max-width", thread_width / 2);
+    }
 
   } 
   else {
 
     $(this).attr("src", image_small);
     $(this).removeClass("full-image");
+
+    if(window.matchMedia('(max-width: 600px)').matches)
+      $(this).css("max-height", "");
+
     $(this).css("max-width", "");
 
   }
@@ -35,6 +46,8 @@ function expand_image_reply(){
     $(this).attr("src", image_full);
     $(this).addClass("full-image");
     $(this).css("max-width", thread_width);
+    if(window.matchMedia('(max-width: 600px)').matches)
+      $(this).css("max-height", "initial");
     $(this).css("margin-right", 0);
 
   } 
@@ -43,6 +56,8 @@ function expand_image_reply(){
     $(this).attr("src", image_small);
     $(this).removeClass("full-image");
     $(this).css("max-width", "");
+    if(window.matchMedia('(max-width: 600px)').matches)
+      $(this).css("max-height", "");
     $(this).css("margin-right", 5);
 
   }
