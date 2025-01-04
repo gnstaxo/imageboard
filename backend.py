@@ -25,7 +25,9 @@ def send_upload(filename):
     return static_file(filename, root='uploads')
 
 def get_current_user(req):
-    ip = req.get('REMOTE_ADDR')
+
+    ip = req.get('HTTP_X_FORWARDED_FOR')
+    if ip is None: ip = req.get('REMOTE_ADDR')
 
     try:
         current_user = Anon.get(Anon.ip == ip)
