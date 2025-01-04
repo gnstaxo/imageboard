@@ -522,11 +522,15 @@ a.reps {
   }
   .Thread-image,
   .Thread-video,
-  .Reply-image,
   .Reply-video {
     max-width: 100px;
     max-height: 100px;
     margin-left: 2px;
+  }
+  .Reply-image {
+    max-width: 100px;
+    max-height: 100px;
+    margin-left: 0;
   }
   .Thread-info {
     line-height: 2;
