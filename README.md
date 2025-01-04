@@ -34,6 +34,4 @@
 
 Admin dashboard is at `/admin` for which you'll first have to go through `/login`.
 
-## Notes
-- Reverse proxy only works in production mode.
-- To use a MySQL database install pymysql, and psycopg2 for Postgresql.
+To use a MySQL database install pymysql, or psycopg2 for Postgresql.
