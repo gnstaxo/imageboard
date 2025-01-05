@@ -57,12 +57,12 @@
   % include('thread_text', board_name=board_name, board=board)
   </div>
   <div class="Replies">
-  % query = board.posts.where(Post.replyrefnum == thread.refnum).order_by(Post.refnum.asc())
-  % replies = query if is_detail else query.offset(query.count() - 4)
+  % query = board.posts.where(Post.replyrefnum == thread.refnum).order_by(Post.refnum.desc())
+  % replies = query if is_detail else query.limit(4)
   % if not is_detail and query.count() > 4:
     <span class="load-replies btn">Load {{query.count() - 4}} replies</span>
   % end
-  % for reply in replies:
+  % for reply in reversed(replies):
   % include('reply', reply=reply)
   % end
   </div>
