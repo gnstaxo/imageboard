@@ -48,13 +48,13 @@ def check_admin(req):
 @get('/')
 @view('home')
 def home():
-    show_nsfw = ('True' == config['threads.show_nsfw'])
+    show_nsfw = eval(config['home.show_nsfw'])
     active_content_size = get_directory_size('uploads')
     number_of_messages = Post.select().count()
     return dict(title=config['app.title'],
-            welcome_message=config['app.welcome_message'],
-            home_messages=int(config['threads.home_messages']),
-            home_images=int(config['threads.home_images']),
+            welcome_message=config['home.welcome_message'],
+            home_messages=int(config['home.messages']),
+            home_images=int(config['home.images']),
             show_nsfw=show_nsfw, active_content_size=active_content_size,
             number_of_messages=number_of_messages, basename=basename)
 
@@ -109,6 +109,7 @@ def get_board(board_name, page=1):
             thread_count=query.count(),
             max_file_size=config['uploads.upload_max_size'],
             maxlength=config['threads.content_max_length'],
+            timestamp_format=config['threads.timestamp'],
             per_page=per_page, basename=basename,
             host='://'.join(request.urlparts[:2])
         )
@@ -139,6 +140,7 @@ def get_thread(board_name, refnum):
             is_detail=True, current_user=get_current_user(request),
             max_file_size=config['uploads.upload_max_size'],
             maxlength=config['threads.content_max_length'], basename=basename,
+            timestamp_format=config['threads.timestamp'],
             host='://'.join(request.urlparts[:2])
     )
 
@@ -635,7 +637,7 @@ if __name__ == '__main__':
     app = default_app()
     app.wsgi = fix_environ_middleware(app.wsgi)
 
-    production = bool(int(config['app.production']))
+    production = eval(config['app.production'])
 
     run(
         debug    = not production,

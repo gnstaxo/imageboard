@@ -33,7 +33,7 @@
     % if f':{board_name}:' in thread.author.mod:
     <span class="role">Mod</span>
     % end
-  {{thread.date}} No. <span class="dopen">{{thread.refnum}}</span>
+  {{thread.date.strftime(timestamp_format)}} No. <span class="dopen">{{thread.refnum}}</span>
   % if thread.pinned:
     <img class="pin" src="{{basename}}/static/img/sticky.gif"></img>
   % end
