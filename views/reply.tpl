@@ -12,7 +12,7 @@
 	    % if Post.get(Post.refnum == reply.replyrefnum).author.name == reply.author.name:
 		    <span class="op">OP</span>
 	    % end
-	{{reply.date}} <a style="color:black;" href="{{basename}}/{{board_name}}/thread/{{reply.replyrefnum}}#{{reply.refnum}}">No.</a> <span class="dopen">{{reply.refnum}}</span>
+	{{reply.date.strftime(timestamp_format)}} <a style="color:black;" href="{{basename}}/{{board_name}}/thread/{{reply.replyrefnum}}#{{reply.refnum}}">No.</a> <span class="dopen">{{reply.refnum}}</span>
   [<span class="hide-reply" title="Hide reply">=</span>]
 	% if reply.image:
 	<div class="Reply-meta">File:
